@@ -19,7 +19,7 @@ public class Request {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(nullable = false)
     private LocalDateTime created;
@@ -27,4 +27,8 @@ public class Request {
     @OneToOne
     @JoinColumn(name = "requester_id", nullable = false)
     private User requester;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
 }

@@ -12,16 +12,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ParticipationRequestDto {
 
-    private Long id;
+    private Integer id;
 
     @NotNull(message = "Date created should not be null")
-    private LocalDateTime created;
+    private LocalDateTime created = LocalDateTime.now();
 
     @NotNull(message = "Event ID should not be null")
-    private Long event;
+    private Integer event;
 
     @NotNull(message = "Requester ID should not be null")
-    private Long requester;
+    private Integer requester;
 
     @NotNull(message = "Status should not be null")
     private String status;
