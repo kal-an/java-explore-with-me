@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Setter
@@ -23,6 +24,9 @@ public class UpdateEventRequest {
     private String description;
 
     private String eventDate;
+
+    @NotNull(message = "EventId should not be null")
+    private Integer eventId;
 
     private Boolean paid;
 
