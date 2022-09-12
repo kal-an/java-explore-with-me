@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class UserShortDto {
 
-    private Long id;
+    private Integer id;
 
     @NotEmpty(message = "Name should not be empty")
     @Size(max = 150, message = "Name should less 150 characters")
