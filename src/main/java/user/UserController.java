@@ -1,5 +1,6 @@
 package user;
 
+import event.EventService;
 import event.dto.EventFullDto;
 import event.dto.EventShortDto;
 import event.dto.NewEventDto;
@@ -86,7 +87,7 @@ public class UserController {
         return userService.getEvent(userId, authUser, eventId);
     }
 
-    @PatchMapping("/{userId}/events/{eventId}/cancel")
+    @PatchMapping("/{userId}/events/{eventId}")
     public EventFullDto cancelEvent(
                 @PathVariable Integer userId,
                 @RequestHeader(X_HEADER_USER) Integer authUser,
@@ -111,7 +112,7 @@ public class UserController {
             @RequestHeader(X_HEADER_USER) Integer authUser,
             @PathVariable Integer eventId) {
         log.info("Confirm request={}, event={} user={}", reqId, eventId, userId);
-        return userService.confirmRequest(userId, authUser, eventId);
+        return userService.confirmRequest(userId, authUser, reqId, eventId);
     }
 
     @PatchMapping("/{userId}/events/{eventId}/requests/{reqId}/reject")
@@ -121,6 +122,6 @@ public class UserController {
             @RequestHeader(X_HEADER_USER) Integer authUser,
             @PathVariable Integer eventId) {
         log.info("Reject request={}, event={} user={}", reqId, eventId, userId);
-        return userService.rejectRequest(userId, authUser, eventId);
+        return userService.rejectRequest(userId, authUser, reqId, eventId);
     }
 }
