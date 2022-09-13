@@ -28,7 +28,9 @@ public interface UserService {
 
     List<ParticipationRequestDto> getRequests(Integer userId, Integer authUser, Integer eventId);
 
-    ParticipationRequestDto confirmRequest(Integer userId, Integer authUser, Integer eventId);
+    ParticipationRequestDto confirmRequest(Integer userId, Integer authUser,
+                                           Integer reqId, Integer eventId);
 
-    ParticipationRequestDto rejectRequest(Integer userId, Integer authUser, Integer eventId);
+    ParticipationRequestDto rejectRequest(Integer userId, Integer authUser,
+                                          Integer reqId, Integer eventId);
 }
