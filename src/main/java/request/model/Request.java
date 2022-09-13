@@ -1,5 +1,6 @@
 package request.model;
 
+import event.model.Event;
 import lombok.*;
 import user.model.User;
 
@@ -23,6 +24,10 @@ public class Request {
 
     @Column(nullable = false)
     private LocalDateTime created;
+
+    @OneToOne
+    @JoinColumn(name = "event_id", nullable = false)
+    private Event event;
 
     @OneToOne
     @JoinColumn(name = "requester_id", nullable = false)
