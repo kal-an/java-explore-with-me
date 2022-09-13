@@ -1,6 +1,5 @@
 package user;
 
-import event.EventService;
 import event.dto.EventFullDto;
 import event.dto.EventShortDto;
 import event.dto.NewEventDto;
