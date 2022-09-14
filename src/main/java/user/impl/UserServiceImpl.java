@@ -83,10 +83,11 @@ public class UserServiceImpl implements UserService {
                         .build());
         request.setRequester(userInDb);
         request.setEvent(EventMapper.toEvent(eventDto));
-        request.setStatus(Status.PENDING);
         request.setCreated(LocalDateTime.now());
-        if (!eventDto.getRequestModeration()) {
+        if (eventDto.getParticipantLimit() == 0 || !eventDto.getRequestModeration()) {
             request.setStatus(Status.CONFIRMED);
+        } else {
+            request.setStatus(Status.PENDING);
         }
         final Request savedRequest = requestRepository.save(request);
         log.info("Request {} saved", savedRequest);
