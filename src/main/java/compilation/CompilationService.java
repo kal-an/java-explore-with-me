@@ -2,6 +2,7 @@ package compilation;
 
 import compilation.dto.CompilationDto;
 import compilation.dto.NewCompilationDto;
+import event.model.Event;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public interface CompilationService {
 
     void deleteEventCompilation(Integer compId, Integer eventId);
 
-    void addEventCompilation(Integer compId, Integer eventId);
+    void addEventCompilation(Integer compId, Event newEvent);
 
     void unPinCompilation(Integer compId);
 

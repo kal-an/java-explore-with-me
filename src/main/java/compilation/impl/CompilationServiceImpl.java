@@ -23,12 +23,9 @@ import java.util.stream.Collectors;
 public class CompilationServiceImpl implements CompilationService {
 
     private final CompilationRepository compilationRepository;
-    private final EventService eventService;
 
-    public CompilationServiceImpl(CompilationRepository compilationRepository,
-                                  EventService eventService) {
+    public CompilationServiceImpl(CompilationRepository compilationRepository) {
         this.compilationRepository = compilationRepository;
-        this.eventService = eventService;
     }
 
     @Override
@@ -81,14 +78,13 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
-    public void addEventCompilation(Integer compId, Integer eventId) {
+    public void addEventCompilation(Integer compId, Event newEvent) {
         final Compilation compInDb = compilationRepository.findById(compId).orElseThrow(() ->
                 new CompilationNotFoundException(String
                         .format("Compilation with id=%d was not found.", compId)));
-        final Event newEvent = EventMapper.toEvent(eventService.getEvent(eventId));
         compInDb.getEvents().add(newEvent);
         final Compilation savedCompilation = compilationRepository.save(compInDb);
-        log.info("Event {} removed from compilation {}", eventId, savedCompilation);
+        log.info("Event {} removed from compilation {}", newEvent, savedCompilation);
     }
 
     @Override
