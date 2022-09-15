@@ -5,6 +5,7 @@ import compilation.dto.CompilationDto;
 import compilation.dto.NewCompilationDto;
 import event.dto.AdminUpdateEventRequest;
 import event.dto.EventFullDto;
+import user.dto.UserDto;
 
 import java.util.List;
 
@@ -39,4 +40,9 @@ public interface AdminService {
 
     void pinCompilation(Integer authUser, Integer compId);
 
+    List<UserDto> getUsers(Integer authUser, List<Integer> ids, Integer from, Integer size);
+
+    UserDto addUser(Integer authUser, UserDto newDto);
+
+    void deleteUser(Integer authUser, Integer userId);
 }
