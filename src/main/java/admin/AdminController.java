@@ -7,6 +7,7 @@ import event.dto.AdminUpdateEventRequest;
 import event.dto.EventFullDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import user.dto.UserDto;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -135,5 +136,31 @@ public class AdminController {
             @RequestHeader(X_HEADER_USER) Integer authUser) {
         log.info("Pin compilation={}", compId);
         adminService.pinCompilation(authUser, compId);
+    }
+
+    @GetMapping("/users")
+    public List<UserDto> getUsers(
+            @RequestParam List<Integer> ids,
+            @RequestParam(required = false, defaultValue = "0") Integer from,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestHeader(X_HEADER_USER) Integer authUser) {
+        log.info("Getting all users");
+        return adminService.getUsers(authUser, ids, from, size);
+    }
+
+    @PostMapping("/users")
+    public UserDto addUser(
+            @Valid @RequestBody UserDto newDto,
+            @RequestHeader(X_HEADER_USER) Integer authUser) {
+        log.info("Add new user {}", newDto);
+        return adminService.addUser(authUser, newDto);
+    }
+
+    @DeleteMapping("/users/{userId}")
+    public void deleteUser(
+            @PathVariable Integer userId,
+            @RequestHeader(X_HEADER_USER) Integer authUser) {
+        log.info("Delete user={}", userId);
+        adminService.deleteUser(authUser, userId);
     }
 }
