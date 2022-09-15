@@ -114,12 +114,12 @@ public class AdminController {
     }
 
     @PatchMapping("/compilations/{compId}/events/{eventId}")
-    public CompilationDto addEventCompilation(
+    public void addEventCompilation(
             @PathVariable Integer compId,
             @PathVariable Integer eventId,
             @RequestHeader(X_HEADER_USER) Integer authUser) {
         log.info("Add event compilation={}, event={}", compId, eventId);
-        return adminService.addEventCompilation(authUser, compId, eventId);
+        adminService.addEventCompilation(authUser, compId, eventId);
     }
 
     @DeleteMapping("/compilations/{compId}/pin")

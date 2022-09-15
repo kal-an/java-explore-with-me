@@ -34,7 +34,7 @@ public interface AdminService {
 
     void deleteEventCompilation(Integer authUser, Integer compId, Integer eventId);
 
-    CompilationDto addEventCompilation(Integer authUser, Integer compId, Integer eventId);
+    void addEventCompilation(Integer authUser, Integer compId, Integer eventId);
 
     void unPinCompilation(Integer authUser, Integer compId);
 
