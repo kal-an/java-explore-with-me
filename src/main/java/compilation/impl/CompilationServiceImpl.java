@@ -5,7 +5,12 @@ import compilation.CompilationNotFoundException;
 import compilation.CompilationRepository;
 import compilation.CompilationService;
 import compilation.dto.CompilationDto;
+import compilation.dto.NewCompilationDto;
 import compilation.model.Compilation;
+import event.EventMapper;
+import event.EventService;
+import event.model.Event;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,12 +19,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class CompilationServiceImpl implements CompilationService {
 
     private final CompilationRepository compilationRepository;
+    private final EventService eventService;
 
-    public CompilationServiceImpl(CompilationRepository compilationRepository) {
+    public CompilationServiceImpl(CompilationRepository compilationRepository,
+                                  EventService eventService) {
         this.compilationRepository = compilationRepository;
+        this.eventService = eventService;
     }
 
     @Override
@@ -33,9 +42,72 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public CompilationDto getCompilation(Integer id) {
-        final Compilation inDb = compilationRepository.findById(id).orElseThrow(() ->
+        final Compilation compInDb = compilationRepository.findById(id).orElseThrow(() ->
                 new CompilationNotFoundException(String
                         .format("Compilation with id=%d was not found.", id)));
-        return CompilationMapper.toDto(inDb);
+        return CompilationMapper.toDto(compInDb);
+    }
+
+    @Override
+    public CompilationDto createCompilation(NewCompilationDto newDto) {
+        final Compilation compilation = CompilationMapper.toCompilation(
+                CompilationDto.builder()
+                        .events(newDto.getEvents())
+                        .title(newDto.getTitle())
+                        .pinned(newDto.getPinned())
+                        .build());
+        final Compilation savedCompilation = compilationRepository.save(compilation);
+        log.info("Compilation {} created", savedCompilation);
+        return CompilationMapper.toDto(savedCompilation);
+    }
+
+    @Override
+    public void deleteCompilation(Integer compId) {
+        final Compilation compInDb = compilationRepository.findById(compId).orElseThrow(() ->
+                new CompilationNotFoundException(String
+                        .format("Compilation with id=%d was not found.", compId)));
+        compilationRepository.delete(compInDb);
+        log.info("Compilation {} deleted", compId);
+    }
+
+    @Override
+    public void deleteEventCompilation(Integer compId, Integer eventId) {
+        final Compilation compInDb = compilationRepository.findById(compId).orElseThrow(() ->
+                new CompilationNotFoundException(String
+                        .format("Compilation with id=%d was not found.", compId)));
+        compInDb.getEvents().removeIf(event -> event.getId().equals(eventId));
+        final Compilation savedCompilation = compilationRepository.save(compInDb);
+        log.info("Event {} removed from compilation {}", eventId, savedCompilation);
+    }
+
+    @Override
+    public void addEventCompilation(Integer compId, Integer eventId) {
+        final Compilation compInDb = compilationRepository.findById(compId).orElseThrow(() ->
+                new CompilationNotFoundException(String
+                        .format("Compilation with id=%d was not found.", compId)));
+        final Event newEvent = EventMapper.toEvent(eventService.getEvent(eventId));
+        compInDb.getEvents().add(newEvent);
+        final Compilation savedCompilation = compilationRepository.save(compInDb);
+        log.info("Event {} removed from compilation {}", eventId, savedCompilation);
+    }
+
+    @Override
+    public void unPinCompilation(Integer compId) {
+        final Compilation compInDb = compilationRepository.findById(compId).orElseThrow(() ->
+                new CompilationNotFoundException(String
+                        .format("Compilation with id=%d was not found.", compId)));
+        compInDb.setPinned(false);
+        final Compilation savedCompilation = compilationRepository.save(compInDb);
+        log.info("Compilation {} unpinned", savedCompilation);
+    }
+
+    @Override
+    public void pinCompilation(Integer compId) {
+        final Compilation compInDb = compilationRepository.findById(compId).orElseThrow(() ->
+                new CompilationNotFoundException(String
+                        .format("Compilation with id=%d was not found.", compId)));
+        compInDb.setPinned(true);
+        final Compilation savedCompilation = compilationRepository.save(compInDb);
+        log.info("Compilation {} pinned", savedCompilation);
     }
 }
