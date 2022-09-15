@@ -22,9 +22,9 @@ public interface AdminService {
 
     EventFullDto rejectEvent(Integer authUser, Integer eventId);
 
-    EventFullDto updateCategory(Integer authUser, CategoryDto updateDto);
+    CategoryDto updateCategory(Integer authUser, CategoryDto updateDto);
 
-    EventFullDto createCategory(Integer authUser, CategoryDto newDto);
+    CategoryDto createCategory(Integer authUser, CategoryDto newDto);
 
     void deleteCategory(Integer authUser, Integer catId);
 

@@ -65,7 +65,7 @@ public class AdminController {
     }
 
     @PatchMapping("/categories")
-    public EventFullDto updateCategory(
+    public CategoryDto updateCategory(
             @Valid @RequestBody CategoryDto updateDto,
             @RequestHeader(X_HEADER_USER) Integer authUser) {
         log.info("Update category updateDto={}", updateDto);
@@ -73,7 +73,7 @@ public class AdminController {
     }
 
     @PostMapping("/categories")
-    public EventFullDto createCategory(
+    public CategoryDto createCategory(
             @Valid @RequestBody CategoryDto newDto,
             @RequestHeader(X_HEADER_USER) Integer authUser) {
         log.info("Create category updateDto={}", newDto);
