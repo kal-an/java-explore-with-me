@@ -1,10 +1,7 @@
 package event.dto;
 
 import category.dto.CategoryDto;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import user.dto.UserShortDto;
 
 import javax.validation.constraints.NotEmpty;
@@ -13,11 +10,12 @@ import javax.validation.constraints.Size;
 
 @Setter
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventShortDto {
 
-    private Long id;
+    private Integer id;
 
     @NotEmpty(message = "Name should not be empty")
     @Size(min = 20, max = 2000, message = "Annotation should less 2000 and greater 20 characters")
