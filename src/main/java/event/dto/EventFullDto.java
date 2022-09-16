@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Setter
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventFullDto extends EventShortDto {
