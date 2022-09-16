@@ -1,5 +1,8 @@
 package ru.yandex.practicum.admin.impl;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.admin.AdminRepository;
 import ru.yandex.practicum.admin.AdminService;
 import ru.yandex.practicum.category.CategoryService;
@@ -12,9 +15,6 @@ import ru.yandex.practicum.event.EventService;
 import ru.yandex.practicum.event.dto.AdminUpdateEventRequest;
 import ru.yandex.practicum.event.dto.EventFullDto;
 import ru.yandex.practicum.event.model.Event;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 import ru.yandex.practicum.user.UserMapper;
 import ru.yandex.practicum.user.UserNotFoundException;
 import ru.yandex.practicum.user.dto.UserDto;
@@ -43,122 +43,80 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<EventFullDto> getAllEvents(Integer authUser, List<Integer> users,
+    public List<EventFullDto> getAllEvents(List<Integer> users,
                                            List<String> states, List<Integer> categories,
                                            String rangeStart, String rangeEnd,
                                            Integer from, Integer size) {
-        adminRepository.findById(authUser).orElseThrow(() ->
-                new UserNotFoundException(String
-                        .format("User with id=%d was not found.", authUser)));
         return eventService.getAllEvents(users, states, categories,
                 rangeStart, rangeEnd, from, size);
     }
 
     @Override
-    public EventFullDto updateEvent(Integer authUser, Integer eventId,
+    public EventFullDto updateEvent(Integer eventId,
                                     AdminUpdateEventRequest updateDto) {
-        adminRepository.findById(authUser).orElseThrow(() ->
-                new UserNotFoundException(String
-                        .format("User with id=%d was not found.", authUser)));
         return eventService.updateEvent(eventId, updateDto);
     }
 
     @Override
-    public EventFullDto publishEvent(Integer authUser, Integer eventId) {
-        adminRepository.findById(authUser).orElseThrow(() ->
-                new UserNotFoundException(String
-                        .format("User with id=%d was not found.", authUser)));
+    public EventFullDto publishEvent(Integer eventId) {
         return eventService.publishEvent(eventId);
     }
 
     @Override
-    public EventFullDto rejectEvent(Integer authUser, Integer eventId) {
-        adminRepository.findById(authUser).orElseThrow(() ->
-                new UserNotFoundException(String
-                        .format("User with id=%d was not found.", authUser)));
+    public EventFullDto rejectEvent(Integer eventId) {
         return eventService.rejectEvent(eventId);
     }
 
     @Override
-    public CategoryDto updateCategory(Integer authUser, CategoryDto updateDto) {
-        adminRepository.findById(authUser).orElseThrow(() ->
-                new UserNotFoundException(String
-                        .format("User with id=%d was not found.", authUser)));
+    public CategoryDto updateCategory(CategoryDto updateDto) {
         return categoryService.updateCategory(updateDto);
     }
 
     @Override
-    public CategoryDto createCategory(Integer authUser, CategoryDto newDto) {
-        adminRepository.findById(authUser).orElseThrow(() ->
-                new UserNotFoundException(String
-                        .format("User with id=%d was not found.", authUser)));
+    public CategoryDto createCategory(CategoryDto newDto) {
         return categoryService.createCategory(newDto);
     }
 
     @Override
-    public void deleteCategory(Integer authUser, Integer catId) {
-        adminRepository.findById(authUser).orElseThrow(() ->
-                new UserNotFoundException(String
-                        .format("User with id=%d was not found.", authUser)));
+    public void deleteCategory(Integer catId) {
         categoryService.deleteCategory(catId);
     }
 
     @Override
-    public CompilationDto createCompilation(Integer authUser, NewCompilationDto newDto) {
-        adminRepository.findById(authUser).orElseThrow(() ->
-                new UserNotFoundException(String
-                        .format("User with id=%d was not found.", authUser)));
+    public CompilationDto createCompilation(NewCompilationDto newDto) {
         return compilationService.createCompilation(newDto);
     }
 
     @Override
-    public void deleteCompilation(Integer authUser, Integer compId) {
-        adminRepository.findById(authUser).orElseThrow(() ->
-                new UserNotFoundException(String
-                        .format("User with id=%d was not found.", authUser)));
+    public void deleteCompilation(Integer compId) {
         compilationService.deleteCompilation(compId);
     }
 
     @Override
-    public void deleteEventCompilation(Integer authUser, Integer compId, Integer eventId) {
-        adminRepository.findById(authUser).orElseThrow(() ->
-                new UserNotFoundException(String
-                        .format("User with id=%d was not found.", authUser)));
+    public void deleteEventCompilation(Integer compId, Integer eventId) {
         eventService.getEvent(eventId);
         compilationService.deleteEventCompilation(compId, eventId);
     }
 
     @Override
-    public void addEventCompilation(Integer authUser, Integer compId, Integer eventId) {
-        adminRepository.findById(authUser).orElseThrow(() ->
-                new UserNotFoundException(String
-                        .format("User with id=%d was not found.", authUser)));
+    public void addEventCompilation(Integer compId, Integer eventId) {
         final Event newEvent = EventMapper.toEvent(eventService.getEvent(eventId));
         compilationService.addEventCompilation(compId, newEvent);
     }
 
     @Override
-    public void unPinCompilation(Integer authUser, Integer compId) {
-        adminRepository.findById(authUser).orElseThrow(() ->
-                new UserNotFoundException(String
-                        .format("User with id=%d was not found.", authUser)));
+    public void unPinCompilation(Integer compId) {
         compilationService.unPinCompilation(compId);
     }
 
     @Override
-    public void pinCompilation(Integer authUser, Integer compId) {
-        adminRepository.findById(authUser).orElseThrow(() ->
-                new UserNotFoundException(String
-                        .format("User with id=%d was not found.", authUser)));
+    public void pinCompilation(Integer compId) {
         compilationService.pinCompilation(compId);
     }
 
     @Override
-    public List<UserDto> getUsers(Integer authUser, List<Integer> ids,
+    public List<UserDto> getUsers(List<Integer> ids,
                                   @Min(0) Integer from, @Min(1) Integer size) {
-        adminRepository.findById(authUser).orElseThrow(() ->
-                new UserNotFoundException(String
-                        .format("User with id=%d was not found.", authUser)));
         if (!ids.isEmpty()) {
             return adminRepository.findAllById(ids).stream()
                     .map(UserMapper::toDto)
@@ -173,20 +131,14 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public UserDto addUser(Integer authUser, UserDto newDto) {
-        adminRepository.findById(authUser).orElseThrow(() ->
-                new UserNotFoundException(String
-                        .format("User with id=%d was not found.", authUser)));
+    public UserDto addUser(UserDto newDto) {
         final User user = UserMapper.toUser(newDto);
         final User savedUser = adminRepository.save(user);
         return UserMapper.toDto(savedUser);
     }
 
     @Override
-    public void deleteUser(Integer authUser, Integer userId) {
-        adminRepository.findById(authUser).orElseThrow(() ->
-                new UserNotFoundException(String
-                        .format("User with id=%d was not found.", authUser)));
+    public void deleteUser(Integer userId) {
         final User user = adminRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException(String
                         .format("User with id=%d was not found.", userId)));
