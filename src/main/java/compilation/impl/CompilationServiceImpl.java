@@ -7,8 +7,6 @@ import compilation.CompilationService;
 import compilation.dto.CompilationDto;
 import compilation.dto.NewCompilationDto;
 import compilation.model.Compilation;
-import event.EventMapper;
-import event.EventService;
 import event.model.Event;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
