@@ -69,7 +69,7 @@ public class AdminController {
     @PostMapping("/categories")
     public CategoryDto createCategory(
             @Valid @RequestBody CategoryDto newDto) {
-        log.info("Create category updateDto={}", newDto);
+        log.info("Create category createDto={}", newDto);
         return adminService.createCategory(newDto);
     }
 
