@@ -8,7 +8,6 @@ import javax.validation.constraints.Size;
 
 @Setter
 @Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDto extends UserShortDto {
