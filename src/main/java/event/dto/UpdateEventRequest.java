@@ -18,7 +18,7 @@ public class UpdateEventRequest {
     @Size(min = 20, max = 2000, message = "Annotation should less 2000 and greater 20 characters")
     private String annotation;
 
-    private Long category;
+    private Integer category;
 
     @Size(min = 20, max = 7000, message = "Description should less 2000 and greater 20 characters")
     private String description;
