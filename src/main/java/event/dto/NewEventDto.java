@@ -20,7 +20,7 @@ public class NewEventDto {
     private String annotation;
 
     @NotNull(message = "Category ID should not be null")
-    private Long category;
+    private Integer category;
 
     @NotEmpty(message = "Description should not be empty")
     @Size(min = 20, max = 7000, message = "Description should less 7000 and greater 20 characters")
