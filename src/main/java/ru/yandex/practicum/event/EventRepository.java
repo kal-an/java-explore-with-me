@@ -11,55 +11,55 @@ import java.util.Optional;
 
 public interface EventRepository extends JpaRepository<Event, Integer> {
 
+    @Query("select new ru.yandex.practicum.event.model.EventExtended(e.id, e.annotation, " +
+            "e.category, e.eventDate, e.initiator, e.paid, e.title, e.description, e.createdOn, " +
+            "e.participantLimit, e.publishedOn, e.requestModeration, e.state, e.lat, e.lon, " +
+            "count(r.id)) from Event as e " +
+            "left join Request as r on e.id = r.event.id " +
+            "where e.initiator.id = ?1 and r.status = 'CONFIRMED' " +
+            "group by e.id")
     List<EventExtended> findAllByInitiatorId(Integer id, Pageable pageable);
 
-    @Query("select new ru.yandex.practicum.event.model.EventExtended(e.id, e.title, " +
-            "e.description, e.created_on, " +
-            "e.event_date, e.lat, e.lon, e.annotation, e.paid " +
-            "e.creator_id, e.participant_limit, e.published_on " +
-            "e.published_on, e.request_moderation, e.state, e.category_id, " +
-            "count(r.id)) from event as e " +
-            "left join requests as r on e.id = r.event_id " +
-            "group by e.id " +
-            "where e.id = ?1 and r.status = 'CONFIRMED'")
+    @Query("select new ru.yandex.practicum.event.model.EventExtended(e.id, e.annotation, " +
+            "e.category, e.eventDate, e.initiator, e.paid, e.title, e.description, e.createdOn, " +
+            "e.participantLimit, e.publishedOn, e.requestModeration, e.state, e.lat, e.lon, " +
+            "count(r.id)) from Event as e " +
+            "left join Request as r on e.id = r.event.id " +
+            "where e.id = ?1 and r.status = 'CONFIRMED' " +
+            "group by e.id")
     Optional<EventExtended> findByEventId(Integer eventId);
 
-    @Query("select new ru.yandex.practicum.event.model.EventExtended(e.id, e.title, " +
-            "e.description, e.created_on, " +
-            "e.event_date, e.lat, e.lon, e.annotation, e.paid " +
-            "e.creator_id, e.participant_limit, e.published_on " +
-            "e.published_on, e.request_moderation, e.state, e.category_id, " +
-            "count(r.id)) from event as e " +
-            "left join requests as r on e.id = r.event_id " +
-            "group by e.id " +
-            "where " +
-            "upper(i.annotation) like upper(concat('%', ?1, '%')) " +
-            "or upper(i.description) like upper(concat('%', ?1, '%')) " +
-            "and e.category_id in (?2) " +
-            "and paid = ?3 " +
-            "and e.event_date >= ?4 " +
-            "and e.event_date < ?5 " +
-            "and e.event_date < ?5 " +
+    @Query("select new ru.yandex.practicum.event.model.EventExtended(e.id, e.annotation, " +
+            "e.category, e.eventDate, e.initiator, e.paid, e.title, e.description, e.createdOn, " +
+            "e.participantLimit, e.publishedOn, e.requestModeration, e.state, e.lat, e.lon, " +
+            "count(r.id)) from Event as e " +
+            "left join Request as r on e.id = r.event.id " +
+            "where upper(e.annotation) like upper(concat('%', ?1, '%')) " +
+            "or upper(e.description) like upper(concat('%', ?1, '%')) " +
+            "and e.category.id in (?2) " +
+            "and e.paid = ?3 " +
+            "and e.eventDate >= ?4 " +
+            "and e.eventDate < ?5 " +
+            "and e.eventDate < ?5 " +
             "and r.status = 'CONFIRMED' " +
-            "and state = 'PUBLISHED'")
+            "and e.state = 'PUBLISHED'" +
+            "group by e.id")
     List<EventExtended> findAllEvents(String text, List<Integer> categories, Boolean paid,
                                                  String rangeStart, String rangeEnd,
                                                  Pageable pageable);
 
-    @Query("select new ru.yandex.practicum.event.model.EventExtended(e.id, e.title, " +
-            "e.description, e.created_on, " +
-            "e.event_date, e.lat, e.lon, e.annotation, e.paid " +
-            "e.creator_id, e.participant_limit, e.published_on " +
-            "e.published_on, e.request_moderation, e.state, e.category_id, " +
-            "count(r.id)) from event as e " +
-            "left join requests as r on e.id = r.event_id " +
-            "group by e.id " +
+    @Query("select new ru.yandex.practicum.event.model.EventExtended(e.id, e.annotation, " +
+            "e.category, e.eventDate, e.initiator, e.paid, e.title, e.description, e.createdOn, " +
+            "e.participantLimit, e.publishedOn, e.requestModeration, e.state, e.lat, e.lon, " +
+            "count(r.id)) from Event as e " +
+            "left join Request as r on e.id = r.event.id " +
             "where " +
-            "e.creator_id in (?1) " +
-            "e.state in (?2) " +
-            "e.category_id in (?3) " +
-            "and e.event_date >= ?4 " +
-            "and e.event_date < ?5")
+            "e.initiator in (?1) " +
+            "and e.state in (?2) " +
+            "and e.category in (?3) " +
+            "and e.eventDate >= ?4 " +
+            "and e.eventDate < ?5 " +
+            "group by e.id ")
     List<EventExtended> findAllEvents(List<Integer> users, List<String> states,
                                       List<Integer> categories,
                                       String rangeStart, String rangeEnd, Pageable pageable);
