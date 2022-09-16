@@ -10,27 +10,27 @@ import java.util.List;
 
 public interface UserService {
 
-    List<ParticipationRequestDto> getRequests(Integer userId, Integer authUser);
+    List<ParticipationRequestDto> getRequests(Integer userId);
 
-    ParticipationRequestDto createRequest(Integer userId, Integer authUser, Integer eventId);
+    ParticipationRequestDto createRequest(Integer userId, Integer eventId);
 
-    ParticipationRequestDto cancelRequest(Integer userId, Integer authUser, Integer requestId);
+    ParticipationRequestDto cancelRequest(Integer userId, Integer requestId);
 
-    List<EventShortDto> getEvents(Integer userId, Integer authUser, Integer from, Integer size);
+    List<EventShortDto> getEvents(Integer userId, Integer from, Integer size);
 
-    EventFullDto updateEvent(Integer userId, Integer authUser, UpdateEventRequest updateDto);
+    EventFullDto updateEvent(Integer userId, UpdateEventRequest updateDto);
 
-    EventFullDto createEvent(Integer userId, Integer authUser, NewEventDto newEventDto);
+    EventFullDto createEvent(Integer userId, NewEventDto newEventDto);
 
-    EventFullDto getEvent(Integer userId, Integer authUser, Integer eventId);
+    EventFullDto getEvent(Integer userId, Integer eventId);
 
-    EventFullDto cancelEvent(Integer userId, Integer authUser, Integer eventId);
+    EventFullDto cancelEvent(Integer userId, Integer eventId);
 
-    List<ParticipationRequestDto> getRequests(Integer userId, Integer authUser, Integer eventId);
+    List<ParticipationRequestDto> getRequests(Integer userId, Integer eventId);
 
-    ParticipationRequestDto confirmRequest(Integer userId, Integer authUser,
+    ParticipationRequestDto confirmRequest(Integer userId,
                                            Integer reqId, Integer eventId);
 
-    ParticipationRequestDto rejectRequest(Integer userId, Integer authUser,
+    ParticipationRequestDto rejectRequest(Integer userId,
                                           Integer reqId, Integer eventId);
 }

@@ -99,7 +99,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventShortDto> getUserEvents(Integer userId, Integer authUser,
+    public List<EventShortDto> getUserEvents(Integer userId,
                                              @Min(0) Integer from, @Min(1) Integer size) {
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);

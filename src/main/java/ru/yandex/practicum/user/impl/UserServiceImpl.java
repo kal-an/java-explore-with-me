@@ -45,26 +45,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<ParticipationRequestDto> getRequests(Integer userId, Integer authUser) {
-        if (!userId.equals(authUser)) {
-            log.error("User id={} can't to see requests", userId);
-            throw new ForbiddenException(
-                    String.format("User id=%d can't to see requests", userId));
-
-        }
+    public List<ParticipationRequestDto> getRequests(Integer userId) {
         return requestRepository.findByRequesterId(userId).stream()
                 .map(RequestMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ParticipationRequestDto createRequest(Integer userId, Integer authUser,
+    public ParticipationRequestDto createRequest(Integer userId,
                                                  Integer eventId) {
-        if (!userId.equals(authUser)) {
-            log.error("User id={} can't create request", userId);
-            throw new ForbiddenException(
-                    String.format("User id=%d can't create request", userId));
-        }
         final User userInDb = userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException(String
                         .format("User with id=%d was not found.", userId)));
@@ -95,13 +84,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ParticipationRequestDto cancelRequest(Integer userId, Integer authUser,
+    public ParticipationRequestDto cancelRequest(Integer userId,
                                                  Integer requestId) {
-        if (!userId.equals(authUser)) {
-            log.error("User id={} can't cancel requestId={}", userId, requestId);
-            throw new ForbiddenException(
-                    String.format("User id=%d can't cancel requestId=%d", userId, requestId));
-        }
         userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException(String
                         .format("User with id=%d was not found.", userId)));
@@ -115,27 +99,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<EventShortDto> getEvents(Integer userId, Integer authUser,
+    public List<EventShortDto> getEvents(Integer userId,
                                          @Min(0) Integer from, @Min(1) Integer size) {
-        if (!userId.equals(authUser)) {
-            log.error("User id={} can't see events", userId);
-            throw new ForbiddenException(
-                    String.format("User id=%d can't see events", userId));
-        }
         userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException(String
                         .format("User with id=%d was not found.", userId)));
-        return eventService.getUserEvents(userId, authUser, from, size);
+        return eventService.getUserEvents(userId, from, size);
     }
 
     @Override
-    public EventFullDto updateEvent(Integer userId, Integer authUser,
+    public EventFullDto updateEvent(Integer userId,
                                     UpdateEventRequest updateDto) {
-        if (!userId.equals(authUser)) {
-            log.error("User id={} can't update event", userId);
-            throw new ForbiddenException(
-                    String.format("User id=%d can't update event", userId));
-        }
         userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException(String
                         .format("User with id=%d was not found.", userId)));
@@ -143,12 +117,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public EventFullDto createEvent(Integer userId, Integer authUser, NewEventDto newEventDto) {
-        if (!userId.equals(authUser)) {
-            log.error("User id={} can't create event", userId);
-            throw new ForbiddenException(
-                    String.format("User id=%d can't create event", userId));
-        }
+    public EventFullDto createEvent(Integer userId, NewEventDto newEventDto) {
         final User user = userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException(String
                         .format("User with id=%d was not found.", userId)));
@@ -156,12 +125,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public EventFullDto getEvent(Integer userId, Integer authUser, Integer eventId) {
-        if (!userId.equals(authUser)) {
-            log.error("User id={} can't see event", userId);
-            throw new ForbiddenException(
-                    String.format("User id=%d can't see event", userId));
-        }
+    public EventFullDto getEvent(Integer userId, Integer eventId) {
         userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException(String
                         .format("User with id=%d was not found.", userId)));
@@ -169,12 +133,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public EventFullDto cancelEvent(Integer userId, Integer authUser, Integer eventId) {
-        if (!userId.equals(authUser)) {
-            log.error("User id={} can't cancel event", userId);
-            throw new ForbiddenException(
-                    String.format("User id=%d can't cancel event", userId));
-        }
+    public EventFullDto cancelEvent(Integer userId, Integer eventId) {
         userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException(String
                         .format("User with id=%d was not found.", userId)));
@@ -182,13 +141,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<ParticipationRequestDto> getRequests(Integer userId, Integer authUser,
+    public List<ParticipationRequestDto> getRequests(Integer userId,
                                                      Integer eventId) {
-        if (!userId.equals(authUser)) {
-            log.error("User id={} can't see requests", userId);
-            throw new ForbiddenException(
-                    String.format("User id=%d can't see requests", userId));
-        }
         userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException(String
                         .format("User with id=%d was not found.", userId)));
@@ -199,15 +153,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ParticipationRequestDto confirmRequest(Integer userId, Integer authUser,
+    public ParticipationRequestDto confirmRequest(Integer userId,
                                                   Integer reqId, Integer eventId) {
         final EventFullDto eventDto = eventService.getEvent(eventId);
-        if (!userId.equals(authUser)
-            || eventDto.getConfirmedRequests() >= eventDto.getParticipantLimit()) {
-            log.error("User id={} can't confirm request", userId);
-            throw new ForbiddenException(
-                    String.format("User id=%d can't confirm request", userId));
-        }
         userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException(String
                         .format("User with id=%d was not found.", userId)));
@@ -229,13 +177,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ParticipationRequestDto rejectRequest(Integer userId, Integer authUser,
+    public ParticipationRequestDto rejectRequest(Integer userId,
                                                  Integer reqId, Integer eventId) {
-        if (!userId.equals(authUser)) {
-            log.error("User id={} can't reject request", userId);
-            throw new ForbiddenException(
-                    String.format("User id=%d can't reject request", userId));
-        }
         userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException(String
                         .format("User with id=%d was not found.", userId)));

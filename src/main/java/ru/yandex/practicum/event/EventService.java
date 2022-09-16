@@ -19,7 +19,7 @@ public interface EventService {
 
     EventFullDto getEvent(Integer id);
 
-    List<EventShortDto> getUserEvents(Integer userId, Integer authUser,
+    List<EventShortDto> getUserEvents(Integer userId,
                                       Integer from, Integer size);
 
     EventFullDto updateEvent(UpdateEventRequest updateDto);

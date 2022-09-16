@@ -17,7 +17,6 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private static final String X_HEADER_USER = "X-Header-User";
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -25,102 +24,91 @@ public class UserController {
 
     @GetMapping("/{userId}/requests")
     public List<ParticipationRequestDto> getRequests(
-                @PathVariable Integer userId,
-                @RequestHeader(X_HEADER_USER) Integer authUser) {
+                @PathVariable Integer userId) {
         log.info("Getting all user={} requests", userId);
-        return userService.getRequests(userId, authUser);
+        return userService.getRequests(userId);
     }
 
     @PostMapping("/{userId}/requests")
     public ParticipationRequestDto createRequest(
                 @PathVariable Integer userId,
-                @RequestParam Integer eventId,
-                @RequestHeader(X_HEADER_USER) Integer authUser) {
+                @RequestParam Integer eventId) {
         log.info("Create request eventId={}, userId={} ", eventId, userId);
-        return userService.createRequest(userId, authUser, eventId);
+        return userService.createRequest(userId, eventId);
     }
 
     @PatchMapping("/{userId}/requests/{requestId}/cancel")
     public ParticipationRequestDto cancelRequest(
                 @PathVariable Integer userId,
-                @PathVariable Integer requestId,
-                @RequestHeader(X_HEADER_USER) Integer authUser) {
+                @PathVariable Integer requestId) {
         log.info("Cancel request={}, userId={} ", requestId, userId);
-        return userService.cancelRequest(userId, authUser, requestId);
+        return userService.cancelRequest(userId, requestId);
     }
 
     @GetMapping("/{userId}/events")
     public List<EventShortDto> getEvents(
                 @PathVariable Integer userId,
-                @RequestHeader(X_HEADER_USER) Integer authUser,
                 @RequestParam(required = false, defaultValue = "0") Integer from,
                 @RequestParam(required = false, defaultValue = "10") Integer size) {
         log.info("Getting events user={}", userId);
-        return userService.getEvents(userId, authUser, from, size);
+        return userService.getEvents(userId, from, size);
     }
 
     @PatchMapping("/{userId}/events")
     public EventFullDto updateEvent(
                 @PathVariable Integer userId,
-                @RequestHeader(X_HEADER_USER) Integer authUser,
                 @Valid @RequestBody UpdateEventRequest updateDto) {
         log.info("Update event user={}, requestDto={}", userId, updateDto);
-        return userService.updateEvent(userId, authUser, updateDto);
+        return userService.updateEvent(userId, updateDto);
     }
 
     @PostMapping("/{userId}/events")
     public EventFullDto createEvent(
                 @PathVariable Integer userId,
-                @RequestHeader(X_HEADER_USER) Integer authUser,
                 @Valid @RequestBody NewEventDto newEventDto) {
         log.info("Create event user={}, event={}", userId, newEventDto);
-        return userService.createEvent(userId, authUser, newEventDto);
+        return userService.createEvent(userId, newEventDto);
     }
 
     @GetMapping("/{userId}/events/{eventId}")
     public EventFullDto getEvent(
                 @PathVariable Integer userId,
-                @RequestHeader(X_HEADER_USER) Integer authUser,
                 @PathVariable Integer eventId) {
         log.info("Getting event={} user={}", eventId, userId);
-        return userService.getEvent(userId, authUser, eventId);
+        return userService.getEvent(userId, eventId);
     }
 
     @PatchMapping("/{userId}/events/{eventId}")
     public EventFullDto cancelEvent(
                 @PathVariable Integer userId,
-                @RequestHeader(X_HEADER_USER) Integer authUser,
                 @PathVariable Integer eventId) {
         log.info("Cancel event={}, userId={} ", eventId, userId);
-        return userService.cancelEvent(userId, authUser, eventId);
+        return userService.cancelEvent(userId, eventId);
     }
 
     @GetMapping("/{userId}/events/{eventId}/requests")
     public List<ParticipationRequestDto> getRequests(
             @PathVariable Integer userId,
-            @RequestHeader(X_HEADER_USER) Integer authUser,
             @PathVariable Integer eventId) {
         log.info("Getting requests, event={} user={}", eventId, userId);
-        return userService.getRequests(userId, authUser, eventId);
+        return userService.getRequests(userId, eventId);
     }
 
     @PatchMapping("/{userId}/events/{eventId}/requests/{reqId}/confirm")
     public ParticipationRequestDto confirmRequest(
             @PathVariable Integer userId,
             @PathVariable Integer reqId,
-            @RequestHeader(X_HEADER_USER) Integer authUser,
             @PathVariable Integer eventId) {
         log.info("Confirm request={}, event={} user={}", reqId, eventId, userId);
-        return userService.confirmRequest(userId, authUser, reqId, eventId);
+        return userService.confirmRequest(userId, reqId, eventId);
     }
 
     @PatchMapping("/{userId}/events/{eventId}/requests/{reqId}/reject")
     public ParticipationRequestDto rejectRequest(
             @PathVariable Integer userId,
             @PathVariable Integer reqId,
-            @RequestHeader(X_HEADER_USER) Integer authUser,
             @PathVariable Integer eventId) {
         log.info("Reject request={}, event={} user={}", reqId, eventId, userId);
-        return userService.rejectRequest(userId, authUser, reqId, eventId);
+        return userService.rejectRequest(userId, reqId, eventId);
     }
 }
