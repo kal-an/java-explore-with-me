@@ -196,7 +196,7 @@ public class EventServiceImpl implements EventService {
                         .lon(newDto.getLocation().getLon())
                         .lat(newDto.getLocation().getLat())
                         .build());
-        dto.setConfirmedRequests(0);
+        dto.setConfirmedRequests(0L);
         dto.setState(State.PENDING.name());
 
         final Event event = EventMapper.toEvent(dto);

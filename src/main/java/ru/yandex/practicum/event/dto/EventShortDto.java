@@ -24,7 +24,7 @@ public class EventShortDto {
     @NotNull(message = "Category ID should not be null")
     private CategoryDto category;
 
-    private Integer confirmedRequests;
+    private Long confirmedRequests;
 
     @NotEmpty(message = "Event date should not be empty")
     private String eventDate;
