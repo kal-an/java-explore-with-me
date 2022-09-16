@@ -10,6 +10,7 @@ import javax.validation.constraints.Size;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class UserDto extends UserShortDto {
 
     @Email(message = "Email should be valid")
