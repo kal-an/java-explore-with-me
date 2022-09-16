@@ -116,7 +116,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public List<UserDto> getUsers(List<Integer> ids,
-                                  @Min(0) Integer from, @Min(1) Integer size) {
+                                  Integer from, Integer size) {
         if (!ids.isEmpty()) {
             return adminRepository.findAllById(ids).stream()
                     .map(UserMapper::toDto)
