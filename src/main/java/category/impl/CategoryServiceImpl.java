@@ -6,7 +6,6 @@ import category.CategoryRepository;
 import category.CategoryService;
 import category.dto.CategoryDto;
 import category.model.Category;
-import exception.ConflictEntityException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
