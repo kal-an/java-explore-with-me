@@ -1,5 +1,6 @@
 package ru.yandex.practicum.admin.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,11 +21,11 @@ import ru.yandex.practicum.user.UserNotFoundException;
 import ru.yandex.practicum.user.dto.UserDto;
 import ru.yandex.practicum.user.model.User;
 
-import javax.validation.constraints.Min;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class AdminServiceImpl implements AdminService {
 
     private final EventService eventService;
@@ -134,6 +135,7 @@ public class AdminServiceImpl implements AdminService {
     public UserDto addUser(UserDto newDto) {
         final User user = UserMapper.toUser(newDto);
         final User savedUser = adminRepository.save(user);
+        log.info("User {} saved", savedUser);
         return UserMapper.toDto(savedUser);
     }
 
