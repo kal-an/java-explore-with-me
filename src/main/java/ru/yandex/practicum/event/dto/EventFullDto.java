@@ -24,7 +24,7 @@ public class EventFullDto extends EventShortDto {
     @NotNull(message = "Created date should not be null")
     private LocalDateTime createdOn;
 
-    @Min(value = 1, message = "Participant limit should greater then 0")
+    @NotNull(message = "Limit should not be null")
     private Integer participantLimit;
 
     @NotNull(message = "Published date should not be null")

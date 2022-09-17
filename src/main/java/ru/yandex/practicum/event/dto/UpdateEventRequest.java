@@ -30,7 +30,7 @@ public class UpdateEventRequest {
 
     private Boolean paid;
 
-    @Min(value = 1, message = "Participant limit should greater then 0")
+    @NotNull(message = "Limit should not be null")
     private Integer participantLimit;
 
     private Boolean requestModeration;
