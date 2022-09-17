@@ -61,7 +61,8 @@ public class UserServiceImpl implements UserService {
         if (userId.equals(userInDb.getId()) && eventId.equals(eventDto.getId())
             || eventDto.getInitiator().getId().equals(userId)
             || !eventDto.getState().equals(State.PUBLISHED.name())
-            || eventDto.getConfirmedRequests() >= eventDto.getParticipantLimit()) {
+            || eventDto.getConfirmedRequests() >= eventDto.getParticipantLimit()
+            && eventDto.getParticipantLimit() > 0) {
             log.error("User id={} can't create request, eventId={}", userId, eventId);
             throw new ForbiddenException(
                     String.format("User id=%d can't create request, eventId=%d", userId, eventId));
@@ -73,7 +74,7 @@ public class UserServiceImpl implements UserService {
         request.setRequester(userInDb);
         request.setEvent(EventMapper.toEvent(eventDto));
         request.setCreated(LocalDateTime.now());
-        if (eventDto.getParticipantLimit() == 0 || !eventDto.getRequestModeration()) {
+        if (!eventDto.getRequestModeration()) {
             request.setStatus(Status.CONFIRMED);
         } else {
             request.setStatus(Status.PENDING);
