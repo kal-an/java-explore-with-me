@@ -1,9 +1,6 @@
 package ru.yandex.practicum.event.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -13,6 +10,7 @@ import javax.validation.constraints.Size;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class UpdateEventRequest {
 
     @Size(min = 20, max = 2000, message = "Annotation should less 2000 and greater 20 characters")
