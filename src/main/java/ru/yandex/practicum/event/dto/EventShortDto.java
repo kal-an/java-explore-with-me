@@ -1,7 +1,8 @@
 package ru.yandex.practicum.event.dto;
 
-import ru.yandex.practicum.category.dto.CategoryDto;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import ru.yandex.practicum.category.dto.CategoryDto;
 import ru.yandex.practicum.user.dto.UserShortDto;
 
 import javax.validation.constraints.NotEmpty;
@@ -27,6 +28,7 @@ public class EventShortDto {
     private Long confirmedRequests;
 
     @NotEmpty(message = "Event date should not be empty")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private String eventDate;
 
     @NotNull(message = "Initiator should not be null")

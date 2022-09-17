@@ -8,14 +8,19 @@ import ru.yandex.practicum.event.model.Event;
 import ru.yandex.practicum.event.model.EventExtended;
 import ru.yandex.practicum.user.UserMapper;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class EventMapper {
+
+    private static final DateTimeFormatter DF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static EventShortDto toShortDto(EventExtended event) {
         return EventShortDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
                 .category(CategoryMapper.toDto(event.getCategory()))
-                .eventDate(event.getEventDate())
+                .eventDate(event.getEventDate().format(DF))
                 .initiator(UserMapper.toDto(event.getInitiator()))
                 .paid(event.getPaid())
                 .title(event.getTitle())
@@ -32,7 +37,7 @@ public class EventMapper {
         dto.setId(event.getId());
         dto.setAnnotation(event.getAnnotation());
         dto.setCategory(CategoryMapper.toDto(event.getCategory()));
-        dto.setEventDate(event.getEventDate());
+        dto.setEventDate(event.getEventDate().format(DF));
         dto.setInitiator(UserMapper.toShortDto(event.getInitiator()));
         dto.setPaid(event.getPaid());
         dto.setTitle(event.getTitle());
@@ -52,7 +57,7 @@ public class EventMapper {
                 .id(dto.getId())
                 .annotation(dto.getAnnotation())
                 .category(CategoryMapper.toCategory(dto.getCategory()))
-                .eventDate(dto.getEventDate())
+                .eventDate(LocalDateTime.parse(dto.getEventDate(), DF))
                 .paid(dto.getPaid())
                 .title(dto.getTitle())
                 .description(dto.getDescription())

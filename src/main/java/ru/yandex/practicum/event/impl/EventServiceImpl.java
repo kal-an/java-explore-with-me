@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.user.UserMapper;
 import ru.yandex.practicum.user.model.User;
 
 import javax.validation.constraints.Min;
@@ -31,7 +32,7 @@ public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
     private final CategoryRepository categoryRepository;
-    private static final DateTimeFormatter DF = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss");
+    private static final DateTimeFormatter DF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public EventServiceImpl(EventRepository eventRepository,
                             CategoryRepository categoryRepository) {
@@ -126,7 +127,8 @@ public class EventServiceImpl implements EventService {
                         .format("Category with id=%d was not found.",
                                 updateDto.getCategory())));
         if (updateDto.getPaid() != null) eventInDb.setPaid(updateDto.getPaid());
-        if (updateDto.getEventDate() != null) eventInDb.setEventDate(updateDto.getEventDate());
+        if (updateDto.getEventDate() != null)
+            eventInDb.setEventDate(LocalDateTime.parse(updateDto.getEventDate()));
         if (updateDto.getAnnotation() != null) eventInDb.setAnnotation(updateDto.getAnnotation());
         if (updateDto.getCategory() != null) eventInDb.setCategory(newCategory);
         if (updateDto.getDescription() != null)
@@ -154,7 +156,8 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new EventNotFoundException(String
                         .format("Category with id=%d was not found.", updateDto.getCategory())));
         if (updateDto.getPaid() != null) eventInDb.setPaid(updateDto.getPaid());
-        if (updateDto.getEventDate() != null) eventInDb.setEventDate(updateDto.getEventDate());
+        if (updateDto.getEventDate() != null)
+            eventInDb.setEventDate(LocalDateTime.parse(updateDto.getEventDate()));
         if (updateDto.getAnnotation() != null) eventInDb.setAnnotation(updateDto.getAnnotation());
         if (updateDto.getCategory() != null) eventInDb.setCategory(newCategory);
         if (updateDto.getDescription() != null)
@@ -183,9 +186,30 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new EventNotFoundException(String
                         .format("Category with id=%d was not found.",
                                 newDto.getCategory())));
+        final Event event = Event.builder()
+                .annotation(newDto.getAnnotation())
+                .category(CategoryMapper.toCategory(CategoryMapper.toDto(category)))
+                .eventDate(newDto.getEventDate())
+                .paid(newDto.getPaid())
+                .title(newDto.getTitle())
+                .description(newDto.getDescription())
+                .createdOn(LocalDateTime.now())
+                .participantLimit(newDto.getParticipantLimit())
+                .requestModeration(newDto.getRequestModeration())
+                .lat(newDto.getLocation().getLat())
+                .lon(newDto.getLocation().getLon())
+                .state(State.PENDING)
+                .initiator(user)
+                .build();
+
+        final Event savedInDb = eventRepository.save(event);
+        log.info("Event {} saved", savedInDb);
         final EventFullDto dto = new EventFullDto();
+        dto.setId(savedInDb.getId());
         dto.setPaid(newDto.getPaid());
         dto.setEventDate(newDto.getEventDate().format(DF));
+        dto.setCreatedOn(savedInDb.getCreatedOn());
+        dto.setInitiator(UserMapper.toDto(user));
         dto.setAnnotation(newDto.getAnnotation());
         dto.setCategory(CategoryMapper.toDto(category));
         dto.setDescription(newDto.getDescription());
@@ -198,17 +222,7 @@ public class EventServiceImpl implements EventService {
                         .build());
         dto.setConfirmedRequests(0L);
         dto.setState(State.PENDING.name());
-
-        final Event event = EventMapper.toEvent(dto);
-        event.setInitiator(user);
-        event.setState(State.PUBLISHED);
-        final Event savedInDb = eventRepository.save(event);
-        final EventExtended eventInDb =  eventRepository
-                .findByEventId(savedInDb.getId()).orElseThrow(() ->
-                        new EventNotFoundException(String.format("Event with id=%d was not found.",
-                                savedInDb.getId())));
-        log.info("Event {} saved", savedInDb);
-        return EventMapper.toFullDto(eventInDb);
+        return dto;
     }
 
     @Override
@@ -236,7 +250,7 @@ public class EventServiceImpl implements EventService {
                                 eventId)));
         if (!eventInDb.getState().equals(State.PENDING)
                 || LocalDateTime.now().plusHours(1)
-                .isAfter(LocalDateTime.parse(eventInDb.getEventDate()))) {
+                .isAfter(eventInDb.getEventDate())) {
             log.error("Event id={} couldn't be published", eventInDb.getId());
             throw new ForbiddenException(
                     String.format("Event id=%d couldn't be published", eventInDb.getId()));

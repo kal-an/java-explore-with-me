@@ -1,7 +1,7 @@
 package ru.yandex.practicum.event.model;
 
-import ru.yandex.practicum.category.model.Category;
 import lombok.*;
+import ru.yandex.practicum.category.model.Category;
 import ru.yandex.practicum.user.model.User;
 
 import javax.persistence.*;
@@ -30,7 +30,7 @@ public class Event {
     private Category category;
 
     @Column(nullable = false)
-    private String eventDate;
+    private LocalDateTime eventDate;
 
     @OneToOne
     @JoinColumn(name = "creator_id", nullable = false)

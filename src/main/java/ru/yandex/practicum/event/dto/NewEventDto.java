@@ -1,7 +1,7 @@
 package ru.yandex.practicum.event.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -27,7 +27,7 @@ public class NewEventDto {
     private String description;
 
     @NotNull(message = "Event date should not be null")
-    @DateTimeFormat
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
 
     @NotNull(message = "Location should not be null")
