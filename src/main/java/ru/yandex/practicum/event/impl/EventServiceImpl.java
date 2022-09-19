@@ -1,5 +1,9 @@
 package ru.yandex.practicum.event.impl;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.category.CategoryMapper;
 import ru.yandex.practicum.category.CategoryRepository;
 import ru.yandex.practicum.category.model.Category;
@@ -9,15 +13,10 @@ import ru.yandex.practicum.event.EventRepository;
 import ru.yandex.practicum.event.EventService;
 import ru.yandex.practicum.event.dto.*;
 import ru.yandex.practicum.event.model.Event;
-import ru.yandex.practicum.event.model.EventExtended;
+import ru.yandex.practicum.event.model.EventWithRequestsViews;
 import ru.yandex.practicum.event.model.State;
 import ru.yandex.practicum.exception.BadRequestException;
 import ru.yandex.practicum.exception.ForbiddenException;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import ru.yandex.practicum.user.UserMapper;
 import ru.yandex.practicum.user.model.User;
 
 import javax.validation.constraints.Min;
@@ -59,16 +58,9 @@ public class EventServiceImpl implements EventService {
         }
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
-        return eventRepository.findAllEvents(
-                        text,categories, paid,
-                        rangeStart, rangeEnd,
-                        pageable)
-                .stream()
-                .map((EventExtended e) -> {
-                    EventShortDto dto = EventMapper.toShortDto(e);
-                    dto.setViews(1000);
-                    return dto;
-                })
+        return eventRepository.findAllEventsWithRequestsViews(text, categories, paid,
+                        rangeStart, rangeEnd, pageable).stream()
+                .map(EventMapper::toShortDto)
                 .collect(Collectors.toList());
     }
 
@@ -79,22 +71,17 @@ public class EventServiceImpl implements EventService {
                                            Integer from, Integer size) {
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
-        return eventRepository.findAllEvents(users, states, categories,
-                rangeStart, rangeEnd, pageable).stream()
-                .map((EventExtended e) -> {
-                    EventFullDto dto = EventMapper.toFullDto(e);
-                    dto.setViews(1000);
-                    return dto;
-                })
+        return eventRepository.findAllEventsWithRequestsViews(users, states, categories,
+                        rangeStart, rangeEnd, pageable).stream()
+                .map(EventMapper::toFullDto)
                 .collect(Collectors.toList());
     }
 
-
     @Override
     public EventFullDto getEvent(Integer id) {
-        final EventExtended eventInDb =  eventRepository
-                .findByEventId(id).orElseThrow(() ->
-                new EventNotFoundException(String.format("Event with id=%d was not found.", id)));
+        final EventWithRequestsViews eventInDb = eventRepository.findByEventIdWithRequestsViews(id)
+                .orElseThrow(() -> new EventNotFoundException(String
+                        .format("Event with id=%d was not found.", id)));
         log.info("Get event {}", eventInDb);
         return EventMapper.toFullDto(eventInDb);
     }
@@ -104,76 +91,82 @@ public class EventServiceImpl implements EventService {
                                              @Min(0) Integer from, @Min(1) Integer size) {
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
-        return eventRepository.findAllByInitiatorId(userId, pageable).stream()
+        return eventRepository.findByInitiatorIdWithRequestsViews(userId, pageable).stream()
                 .map(EventMapper::toShortDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public EventFullDto updateEvent(UpdateEventRequest updateDto) {
-        final EventExtended eventInDb =  eventRepository
-                .findByEventId(updateDto.getEventId()).orElseThrow(() ->
-                        new EventNotFoundException(String.format("Event with id=%d was not found.",
+        final Event savedInDb = eventRepository.findById(updateDto.getEventId()).orElseThrow(() ->
+                new EventNotFoundException(String.format("Event with id=%d was not found.",
                                 updateDto.getEventId())));
-        if (eventInDb.getState().equals(State.PUBLISHED)
+        if (savedInDb.getState().equals(State.PUBLISHED)
                 || LocalDateTime.now().plusHours(2)
                 .isAfter(LocalDateTime.parse(updateDto.getEventDate()))) {
-            log.error("Event id={} couldn't be updated", eventInDb.getId());
+            log.error("Event id={} couldn't be updated", savedInDb.getId());
             throw new ForbiddenException(
-                    String.format("Event id=%d couldn't be updated", eventInDb.getId()));
+                    String.format("Event id=%d couldn't be updated", savedInDb.getId()));
         }
         final Category newCategory = categoryRepository.findById(updateDto.getCategory())
                 .orElseThrow(() -> new EventNotFoundException(String
                         .format("Category with id=%d was not found.",
                                 updateDto.getCategory())));
-        if (updateDto.getPaid() != null) eventInDb.setPaid(updateDto.getPaid());
+        if (updateDto.getPaid() != null) savedInDb.setPaid(updateDto.getPaid());
         if (updateDto.getEventDate() != null)
-            eventInDb.setEventDate(LocalDateTime.parse(updateDto.getEventDate()));
-        if (updateDto.getAnnotation() != null) eventInDb.setAnnotation(updateDto.getAnnotation());
-        if (updateDto.getCategory() != null) eventInDb.setCategory(newCategory);
+            savedInDb.setEventDate(LocalDateTime.parse(updateDto.getEventDate()));
+        if (updateDto.getAnnotation() != null) savedInDb.setAnnotation(updateDto.getAnnotation());
+        if (updateDto.getCategory() != null) savedInDb.setCategory(newCategory);
         if (updateDto.getDescription() != null)
-            eventInDb.setDescription(updateDto.getDescription());
+            savedInDb.setDescription(updateDto.getDescription());
         if (updateDto.getParticipantLimit() != null)
-            eventInDb.setParticipantLimit(updateDto.getParticipantLimit());
+            savedInDb.setParticipantLimit(updateDto.getParticipantLimit());
         if (updateDto.getRequestModeration() != null)
-            eventInDb.setRequestModeration(updateDto.getRequestModeration());
-        if (updateDto.getTitle() != null) eventInDb.setTitle(updateDto.getTitle());
-        if (eventInDb.getState().equals(State.CANCELED)) {
-            eventInDb.setState(State.PENDING);
+            savedInDb.setRequestModeration(updateDto.getRequestModeration());
+        if (updateDto.getTitle() != null) savedInDb.setTitle(updateDto.getTitle());
+        if (savedInDb.getState().equals(State.CANCELED)) {
+            savedInDb.setState(State.PENDING);
         }
-        final EventExtended savedInDb = eventRepository.save(eventInDb);
-        log.info("Event {} updated", savedInDb);
-        return EventMapper.toFullDto(savedInDb);
+        final Event updatedEvent = eventRepository.save(savedInDb);
+        log.info("Event {} updated", updatedEvent);
+        final EventWithRequestsViews eventInDb = eventRepository
+                .findByEventIdWithRequestsViews(savedInDb.getId()).orElseThrow(() ->
+                        new EventNotFoundException(String.format("Event with id=%d was not found.",
+                                savedInDb.getId())));
+        return EventMapper.toFullDto(eventInDb);
     }
 
     @Override
     public EventFullDto updateEvent(Integer eventId, AdminUpdateEventRequest updateDto) {
-        final EventExtended eventInDb =  eventRepository
-                .findByEventId(eventId).orElseThrow(() ->
-                        new EventNotFoundException(String.format("Event with id=%d was not found.",
-                                eventId)));
+        final Event savedInDb = eventRepository.findById(eventId).orElseThrow(() ->
+                new EventNotFoundException(String
+                        .format("Event with id=%d was not found.", eventId)));
         final Category newCategory = categoryRepository.findById(updateDto.getCategory())
                 .orElseThrow(() -> new EventNotFoundException(String
                         .format("Category with id=%d was not found.", updateDto.getCategory())));
-        if (updateDto.getPaid() != null) eventInDb.setPaid(updateDto.getPaid());
+        if (updateDto.getPaid() != null) savedInDb.setPaid(updateDto.getPaid());
         if (updateDto.getEventDate() != null)
-            eventInDb.setEventDate(LocalDateTime.parse(updateDto.getEventDate()));
-        if (updateDto.getAnnotation() != null) eventInDb.setAnnotation(updateDto.getAnnotation());
-        if (updateDto.getCategory() != null) eventInDb.setCategory(newCategory);
+            savedInDb.setEventDate(LocalDateTime.parse(updateDto.getEventDate()));
+        if (updateDto.getAnnotation() != null) savedInDb.setAnnotation(updateDto.getAnnotation());
+        if (updateDto.getCategory() != null) savedInDb.setCategory(newCategory);
         if (updateDto.getDescription() != null)
-            eventInDb.setDescription(updateDto.getDescription());
+            savedInDb.setDescription(updateDto.getDescription());
         if (updateDto.getParticipantLimit() != null)
-            eventInDb.setParticipantLimit(updateDto.getParticipantLimit());
+            savedInDb.setParticipantLimit(updateDto.getParticipantLimit());
         if (updateDto.getRequestModeration() != null)
-            eventInDb.setRequestModeration(updateDto.getRequestModeration());
-        if (updateDto.getTitle() != null) eventInDb.setTitle(updateDto.getTitle());
+            savedInDb.setRequestModeration(updateDto.getRequestModeration());
+        if (updateDto.getTitle() != null) savedInDb.setTitle(updateDto.getTitle());
         if (updateDto.getLocation() != null) {
-            eventInDb.setLat(updateDto.getLocation().getLat());
-            eventInDb.setLon(updateDto.getLocation().getLon());
+            savedInDb.setLat(updateDto.getLocation().getLat());
+            savedInDb.setLon(updateDto.getLocation().getLon());
         }
-        final EventExtended savedInDb = eventRepository.save(eventInDb);
-        log.info("Event {} updated", savedInDb);
-        return EventMapper.toFullDto(savedInDb);
+        final Event updatedEvent = eventRepository.save(savedInDb);
+        log.info("Event {} updated", updatedEvent);
+        final EventWithRequestsViews eventInDb = eventRepository
+                .findByEventIdWithRequestsViews(savedInDb.getId()).orElseThrow(() ->
+                        new EventNotFoundException(String.format("Event with id=%d was not found.",
+                                savedInDb.getId())));
+        return EventMapper.toFullDto(eventInDb);
     }
 
     @Override
@@ -201,81 +194,75 @@ public class EventServiceImpl implements EventService {
                 .state(State.PENDING)
                 .initiator(user)
                 .build();
-
         final Event savedInDb = eventRepository.save(event);
         log.info("Event {} saved", savedInDb);
-        final EventFullDto dto = new EventFullDto();
-        dto.setId(savedInDb.getId());
-        dto.setPaid(newDto.getPaid());
-        dto.setEventDate(newDto.getEventDate().format(DF));
-        dto.setCreatedOn(savedInDb.getCreatedOn());
-        dto.setInitiator(UserMapper.toDto(user));
-        dto.setAnnotation(newDto.getAnnotation());
-        dto.setCategory(CategoryMapper.toDto(category));
-        dto.setDescription(newDto.getDescription());
-        dto.setParticipantLimit(newDto.getParticipantLimit());
-        dto.setRequestModeration(newDto.getRequestModeration());
-        dto.setTitle(newDto.getTitle());
-        dto.setLocation(EventFullDto.Location.builder()
-                        .lon(newDto.getLocation().getLon())
-                        .lat(newDto.getLocation().getLat())
-                        .build());
-        dto.setConfirmedRequests(0L);
-        dto.setState(State.PENDING.name());
-        return dto;
+        final EventWithRequestsViews eventInDb = eventRepository
+                .findByEventIdWithRequestsViews(savedInDb.getId()).orElseThrow(() ->
+                        new EventNotFoundException(String.format("Event with id=%d was not found.",
+                                savedInDb.getId())));
+        return EventMapper.toFullDto(eventInDb);
     }
 
     @Override
     public EventFullDto cancelEvent(Integer eventId) {
-        final EventExtended eventInDb =  eventRepository
-                .findByEventId(eventId).orElseThrow(() ->
-                        new EventNotFoundException(String.format("Event with id=%d was not found.",
-                                eventId)));
-        if (!eventInDb.getState().equals(State.PENDING)) {
-            log.error("Event id={} couldn't be canceled", eventInDb.getId());
+        final Event savedInDb = eventRepository.findById(eventId).orElseThrow(() ->
+                new EventNotFoundException(String
+                        .format("Event with id=%d was not found.", eventId)));
+        if (!savedInDb.getState().equals(State.PENDING)) {
+            log.error("Event id={} couldn't be canceled", savedInDb.getId());
             throw new ForbiddenException(
-                    String.format("Event id=%d couldn't be canceled", eventInDb.getId()));
+                    String.format("Event id=%d couldn't be canceled", savedInDb.getId()));
         }
-        eventInDb.setState(State.CANCELED);
-        final Event savedInDb = eventRepository.save(eventInDb);
-        log.info("Event {} canceled", savedInDb);
+        savedInDb.setState(State.CANCELED);
+        final Event updatedEvent = eventRepository.save(savedInDb);
+        log.info("Event {} canceled", updatedEvent);
+        final EventWithRequestsViews eventInDb = eventRepository
+                .findByEventIdWithRequestsViews(savedInDb.getId()).orElseThrow(() ->
+                        new EventNotFoundException(String.format("Event with id=%d was not found.",
+                                savedInDb.getId())));
         return EventMapper.toFullDto(eventInDb);
     }
 
     @Override
     public EventFullDto publishEvent(Integer eventId) {
-        final EventExtended eventInDb =  eventRepository
-                .findByEventId(eventId).orElseThrow(() ->
-                        new EventNotFoundException(String.format("Event with id=%d was not found.",
-                                eventId)));
-        if (!eventInDb.getState().equals(State.PENDING)
+        final Event savedInDb = eventRepository.findById(eventId).orElseThrow(() ->
+                new EventNotFoundException(String
+                        .format("Event with id=%d was not found.", eventId)));
+        if (!savedInDb.getState().equals(State.PENDING)
                 || LocalDateTime.now().plusHours(1)
-                .isAfter(eventInDb.getEventDate())) {
-            log.error("Event id={} couldn't be published", eventInDb.getId());
+                .isAfter(savedInDb.getEventDate())) {
+            log.error("Event id={} couldn't be published", savedInDb.getId());
             throw new ForbiddenException(
-                    String.format("Event id=%d couldn't be published", eventInDb.getId()));
+                    String.format("Event id=%d couldn't be published", savedInDb.getId()));
         }
-        eventInDb.setState(State.PUBLISHED);
-        eventInDb.setPublishedOn(LocalDateTime.now());
-        final Event savedInDb = eventRepository.save(eventInDb);
-        log.info("Event {} published", savedInDb);
+        savedInDb.setState(State.PUBLISHED);
+        savedInDb.setPublishedOn(LocalDateTime.now());
+        final Event updatedEvent = eventRepository.save(savedInDb);
+        log.info("Event {} published", updatedEvent);
+        final EventWithRequestsViews eventInDb = eventRepository
+                .findByEventIdWithRequestsViews(savedInDb.getId()).orElseThrow(() ->
+                        new EventNotFoundException(String.format("Event with id=%d was not found.",
+                                savedInDb.getId())));
         return EventMapper.toFullDto(eventInDb);
     }
 
     @Override
     public EventFullDto rejectEvent(Integer eventId) {
-        final EventExtended eventInDb =  eventRepository
-                .findByEventId(eventId).orElseThrow(() ->
-                        new EventNotFoundException(String.format("Event with id=%d was not found.",
-                                eventId)));
-        if (eventInDb.getState().equals(State.PUBLISHED)) {
-            log.error("Event id={} couldn't be rejected", eventInDb.getId());
+        final Event savedInDb = eventRepository.findById(eventId).orElseThrow(() ->
+                new EventNotFoundException(String
+                        .format("Event with id=%d was not found.", eventId)));
+        if (savedInDb.getState().equals(State.PUBLISHED)) {
+            log.error("Event id={} couldn't be rejected", savedInDb.getId());
             throw new ForbiddenException(
-                    String.format("Event id=%d couldn't be rejected", eventInDb.getId()));
+                    String.format("Event id=%d couldn't be rejected", savedInDb.getId()));
         }
-        eventInDb.setState(State.REJECTED);
-        final Event savedInDb = eventRepository.save(eventInDb);
-        log.info("Event {} rejected", savedInDb);
+        savedInDb.setState(State.REJECTED);
+        final Event updatedEvent = eventRepository.save(savedInDb);
+        log.info("Event {} rejected", updatedEvent);
+        final EventWithRequestsViews eventInDb = eventRepository
+                .findByEventIdWithRequestsViews(savedInDb.getId()).orElseThrow(() ->
+                        new EventNotFoundException(String.format("Event with id=%d was not found.",
+                                savedInDb.getId())));
         return EventMapper.toFullDto(eventInDb);
     }
 
