@@ -22,13 +22,13 @@ public class EventFullDto extends EventShortDto {
     private Location location;
 
     @NotNull(message = "Created date should not be null")
-    private LocalDateTime createdOn;
+    private String createdOn;
 
     @NotNull(message = "Limit should not be null")
     private Integer participantLimit;
 
     @NotNull(message = "Published date should not be null")
-    private LocalDateTime publishedOn;
+    private String publishedOn;
 
     private Boolean requestModeration;
 
