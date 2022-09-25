@@ -1,10 +1,6 @@
 package ru.yandex.practicum.stats.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -13,9 +9,9 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class EndpointHit {
 
-    @NotNull(message = "Id should not be null")
     private Integer id;
 
     @NotNull(message = "App should not be null")
@@ -27,7 +23,5 @@ public class EndpointHit {
     @NotNull(message = "IP should not be null")
     private String ip;
 
-    @NotNull(message = "Timestamp should not be null")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp;
 }
