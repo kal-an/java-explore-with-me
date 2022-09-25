@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface StatsProvider {
 
-    Map<Integer, ViewStats> getViewStats(String start, String end, List<String> uris,
+    Map<String, ViewStats> getViewStats(String start, String end, List<String> uris,
                                          Boolean unique);
 
 }
