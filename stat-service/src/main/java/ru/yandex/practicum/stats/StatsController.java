@@ -2,9 +2,10 @@ package ru.yandex.practicum.stats;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.event.dto.EventFullDto;
-import ru.yandex.practicum.event.dto.EventShortDto;
+import ru.yandex.practicum.stats.dto.EndpointHit;
+import ru.yandex.practicum.stats.dto.ViewStats;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -18,26 +19,20 @@ public class StatsController {
         this.statsService = statsService;
     }
 
-    @GetMapping
-    public List<EventShortDto> getAllEvents(
-                    @RequestParam String text,
-                    @RequestParam List<Integer> categories,
-                    @RequestParam Boolean paid,
-                    @RequestParam(required = false) String rangeStart,
-                    @RequestParam(required = false) String rangeEnd,
-                    @RequestParam(required = false, defaultValue = "false") Boolean onlyAvailable,
-                    @RequestParam String sort,
-                    @RequestParam(required = false, defaultValue = "0") Integer from,
-                    @RequestParam(required = false, defaultValue = "10") Integer size) {
-        log.info("Getting all events");
-        return eventService.getAllEvents(text, categories, paid, rangeStart, rangeEnd,
-                onlyAvailable, sort, from, size);
+    @GetMapping("/stats")
+    public List<ViewStats> getStats(
+            @RequestParam String start,
+            @RequestParam String end,
+            @RequestParam List<String> uris,
+            @RequestParam Boolean unique) {
+        log.info("Getting stats for uris {}", uris);
+        return statsService.getStats(start, end, uris, unique);
     }
 
-    @GetMapping("/{id}")
-    public EventFullDto getEvent(@PathVariable Integer id) {
-        log.info("Get event {}", id);
-        return eventService.getEvent(id);
+    @PostMapping("/hit")
+    public void addHit(@Valid @RequestBody EndpointHit newDto) {
+        log.info("Adding new hit {}", newDto);
+        statsService.addHit(newDto);
     }
 
 }
