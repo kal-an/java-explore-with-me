@@ -11,6 +11,8 @@ import ru.yandex.practicum.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class EventMapper {
 
@@ -34,6 +36,12 @@ public class EventMapper {
                 .views(event.getViews())
                 .confirmedRequests(event.getRequests())
                 .build();
+    }
+
+    public static List<EventShortDto> toShortDtoList(List<EventWithRequestsViews> events) {
+        return events.stream()
+                .map(EventMapper::toShortDto)
+                .collect(Collectors.toList());
     }
 
     public static EventFullDto toFullDto(EventWithRequestsViews event) {
