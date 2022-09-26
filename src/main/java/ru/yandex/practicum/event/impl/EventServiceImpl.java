@@ -106,7 +106,7 @@ public class EventServiceImpl implements EventService {
                                 updateDto.getEventId())));
         if (savedInDb.getState().equals(State.PUBLISHED)
                 || LocalDateTime.now().plusHours(2)
-                .isAfter(LocalDateTime.parse(updateDto.getEventDate()))) {
+                .isAfter(LocalDateTime.parse(updateDto.getEventDate(), DF))) {
             log.error("Event id={} couldn't be updated", savedInDb.getId());
             throw new ForbiddenException(
                     String.format("Event id=%d couldn't be updated", savedInDb.getId()));
@@ -117,7 +117,7 @@ public class EventServiceImpl implements EventService {
                                 updateDto.getCategory())));
         if (updateDto.getPaid() != null) savedInDb.setPaid(updateDto.getPaid());
         if (updateDto.getEventDate() != null)
-            savedInDb.setEventDate(LocalDateTime.parse(updateDto.getEventDate()));
+            savedInDb.setEventDate(LocalDateTime.parse(updateDto.getEventDate(), DF));
         if (updateDto.getAnnotation() != null) savedInDb.setAnnotation(updateDto.getAnnotation());
         if (updateDto.getCategory() != null) savedInDb.setCategory(newCategory);
         if (updateDto.getDescription() != null)
