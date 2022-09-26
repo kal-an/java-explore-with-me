@@ -10,6 +10,7 @@ import javax.validation.constraints.Size;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class CategoryDto {
 
     private Integer id;
