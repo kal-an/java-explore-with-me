@@ -5,6 +5,7 @@ import ru.yandex.practicum.compilation.dto.CompilationDto;
 import ru.yandex.practicum.compilation.dto.NewCompilationDto;
 import ru.yandex.practicum.event.dto.AdminUpdateEventRequest;
 import ru.yandex.practicum.event.dto.EventFullDto;
+import ru.yandex.practicum.event.model.State;
 import ru.yandex.practicum.user.dto.UserDto;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
 public interface AdminService {
 
     List<EventFullDto> getAllEvents(List<Integer> users,
-                                    List<String> states, List<Integer> categories,
+                                    List<State> states, List<Integer> categories,
                                     String rangeStart, String rangeEnd,
                                     Integer from, Integer size);
 

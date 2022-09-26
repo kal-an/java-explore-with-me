@@ -16,6 +16,7 @@ import ru.yandex.practicum.event.EventService;
 import ru.yandex.practicum.event.dto.AdminUpdateEventRequest;
 import ru.yandex.practicum.event.dto.EventFullDto;
 import ru.yandex.practicum.event.model.Event;
+import ru.yandex.practicum.event.model.State;
 import ru.yandex.practicum.user.UserMapper;
 import ru.yandex.practicum.user.UserNotFoundException;
 import ru.yandex.practicum.user.dto.UserDto;
@@ -45,7 +46,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public List<EventFullDto> getAllEvents(List<Integer> users,
-                                           List<String> states, List<Integer> categories,
+                                           List<State> states, List<Integer> categories,
                                            String rangeStart, String rangeEnd,
                                            Integer from, Integer size) {
         return eventService.getAllEvents(users, states, categories,

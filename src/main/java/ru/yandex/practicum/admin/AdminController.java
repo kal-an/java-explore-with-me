@@ -7,6 +7,7 @@ import ru.yandex.practicum.event.dto.AdminUpdateEventRequest;
 import ru.yandex.practicum.event.dto.EventFullDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.event.model.State;
 import ru.yandex.practicum.user.dto.UserDto;
 
 import javax.validation.Valid;
@@ -26,7 +27,7 @@ public class AdminController {
     @GetMapping("/events")
     public List<EventFullDto> getAllEvents(
             @RequestParam List<Integer> users,
-            @RequestParam List<String> states,
+            @RequestParam List<State> states,
             @RequestParam List<Integer> categories,
             @RequestParam String rangeStart,
             @RequestParam String rangeEnd,

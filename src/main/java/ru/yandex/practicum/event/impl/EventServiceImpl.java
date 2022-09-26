@@ -67,7 +67,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventFullDto> getAllEvents(List<Integer> users,
-                                           List<String> states, List<Integer> categories,
+                                           List<State> states, List<Integer> categories,
                                            String rangeStart, String rangeEnd,
                                            Integer from, Integer size) {
         int page = from / size;

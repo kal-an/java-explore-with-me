@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.yandex.practicum.event.model.Event;
 import ru.yandex.practicum.event.model.EventWithRequests;
+import ru.yandex.practicum.event.model.State;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -85,7 +86,7 @@ public interface EventRepository extends JpaRepository<Event, Integer>, EventRep
             "where e.initiator.id in (?1) and e.state in (?2) and e.category.id in (?3) " +
             "and e.eventDate >= ?4 and e.eventDate < ?5 " +
             "group by e.id, c.id, u.id")
-    List<EventWithRequests> findAllEvents(List<Integer> users, List<String> states,
+    List<EventWithRequests> findAllEvents(List<Integer> users, List<State> states,
                                           List<Integer> categories,
                                           LocalDateTime rangeStart,
                                           LocalDateTime rangeEnd, Pageable pageable);

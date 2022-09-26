@@ -8,6 +8,7 @@ import ru.yandex.practicum.event.EventRepositoryCustom;
 import ru.yandex.practicum.event.client.dto.ViewStats;
 import ru.yandex.practicum.event.model.EventWithRequests;
 import ru.yandex.practicum.event.model.EventWithRequestsViews;
+import ru.yandex.practicum.event.model.State;
 import ru.yandex.practicum.provider.StatsProvider;
 
 import java.time.LocalDateTime;
@@ -94,7 +95,7 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
 
     @Override
     public List<EventWithRequestsViews> findAllEventsWithRequestsViews(List<Integer> users,
-                                                                       List<String> states,
+                                                                       List<State> states,
                                                                        List<Integer> categories,
                                                                        LocalDateTime rangeStart,
                                                                        LocalDateTime rangeEnd,
