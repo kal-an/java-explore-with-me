@@ -43,6 +43,21 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
     }
 
     @Override
+    public List<EventWithRequestsViews> findByEventIdWithRequestsViews(List<Integer> eventIds) {
+        List<EventWithRequests> events = eventRepository.findByEventIds(eventIds);
+        List<String> uriList = new ArrayList<>();
+        List<EventWithRequestsViews> result = new ArrayList<>();
+        events.forEach(event -> uriList.add("/events/" + event.getId()));
+        Map<String, ViewStats> stats = statsProvider.getViewStats("", "", uriList, false);
+        events.forEach(event -> {
+            String uri = "/events/" + event.getId();
+            int views = stats.get(uri) != null ? stats.get(uri).getHits() : 0;
+            result.add(new EventWithRequestsViews(event, views));
+        });
+        return result;
+    }
+
+    @Override
     public List<EventWithRequestsViews> findByInitiatorIdWithRequestsViews(Integer userID,
                                                                       Pageable pageable) {
         List<EventWithRequests> events = eventRepository.findAllByInitiatorId(userID, pageable);
