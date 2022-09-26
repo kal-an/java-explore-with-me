@@ -2,10 +2,12 @@ package ru.yandex.practicum.event.model;
 
 import lombok.*;
 import ru.yandex.practicum.category.model.Category;
+import ru.yandex.practicum.request.model.Request;
 import ru.yandex.practicum.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Setter
 @Getter
@@ -65,5 +67,8 @@ public class Event {
 
     @Column(nullable = false)
     private Double lon;
+
+    @OneToMany(mappedBy = "event")
+    private List<Request> requests;
 
 }
