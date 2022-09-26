@@ -149,7 +149,7 @@ public class EventServiceImpl implements EventService {
                         .format("Category with id=%d was not found.", updateDto.getCategory())));
         if (updateDto.getPaid() != null) savedInDb.setPaid(updateDto.getPaid());
         if (updateDto.getEventDate() != null)
-            savedInDb.setEventDate(LocalDateTime.parse(updateDto.getEventDate()));
+            savedInDb.setEventDate(LocalDateTime.parse(updateDto.getEventDate(), DF));
         if (updateDto.getAnnotation() != null) savedInDb.setAnnotation(updateDto.getAnnotation());
         if (updateDto.getCategory() != null) savedInDb.setCategory(newCategory);
         if (updateDto.getDescription() != null)
