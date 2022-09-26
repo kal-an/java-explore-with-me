@@ -1,6 +1,7 @@
 package ru.yandex.practicum.compilation.dto;
 
 import lombok.*;
+import ru.yandex.practicum.event.dto.EventShortDto;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
@@ -16,7 +17,7 @@ public class CompilationDto {
 
     private Long id;
 
-    private List<Integer> events;
+    private List<EventShortDto> events;
 
     private Boolean pinned;
 
