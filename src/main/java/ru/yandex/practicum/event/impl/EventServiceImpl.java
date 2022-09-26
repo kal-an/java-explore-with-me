@@ -259,7 +259,7 @@ public class EventServiceImpl implements EventService {
             throw new ForbiddenException(
                     String.format("Event id=%d couldn't be rejected", savedInDb.getId()));
         }
-        savedInDb.setState(State.REJECTED);
+        savedInDb.setState(State.CANCELED);
         final Event updatedEvent = eventRepository.save(savedInDb);
         log.info("Event {} rejected", updatedEvent);
         final EventWithRequestsViews eventInDb = eventRepository
