@@ -31,6 +31,7 @@ public class EventMapper {
                         .build())
                 .paid(event.getPaid())
                 .title(event.getTitle())
+                .views(event.getViews())
                 .confirmedRequests(event.getRequests())
                 .build();
     }
