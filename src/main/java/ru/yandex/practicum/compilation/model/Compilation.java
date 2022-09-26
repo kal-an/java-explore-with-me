@@ -19,7 +19,7 @@ public class Compilation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToMany(mappedBy = "compilations")
     private Set<Event> events;

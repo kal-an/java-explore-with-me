@@ -15,7 +15,7 @@ import java.util.List;
 @ToString
 public class CompilationDto {
 
-    private Long id;
+    private Integer id;
 
     private List<EventShortDto> events;
 
