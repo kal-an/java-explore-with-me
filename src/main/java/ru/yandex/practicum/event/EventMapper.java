@@ -86,7 +86,7 @@ public class EventMapper {
                 .description(dto.getDescription())
                 .createdOn(LocalDateTime.parse(dto.getCreatedOn(), DF))
                 .participantLimit(dto.getParticipantLimit())
-                .publishedOn(LocalDateTime.parse(dto.getPublishedOn(), DF))
+                .publishedOn(dto.getPublishedOn() == null ? null : LocalDateTime.parse(dto.getPublishedOn(), DF))
                 .requestModeration(dto.getRequestModeration())
                 .lat(dto.getLocation().getLat())
                 .lon(dto.getLocation().getLon())
