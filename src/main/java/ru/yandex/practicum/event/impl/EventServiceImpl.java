@@ -44,22 +44,23 @@ public class EventServiceImpl implements EventService {
                                             String rangeStart, String rangeEnd,
                                             Boolean onlyAvailable, String sort,
                                             @Min(0) Integer from, @Min(1) Integer size) {
-        if (LocalDateTime.parse(rangeStart).isAfter(LocalDateTime.parse(rangeEnd))
-            || LocalDateTime.parse(rangeStart).isEqual(LocalDateTime.parse(rangeEnd))) {
+        LocalDateTime start = null, end = null;
+        if (rangeStart.isBlank() || rangeEnd.isBlank()) {
+            start = LocalDateTime.now();
+            end = LocalDateTime.MAX;
+        }
+        if (LocalDateTime.parse(rangeStart, DF).isAfter(LocalDateTime.parse(rangeEnd, DF))
+            || LocalDateTime.parse(rangeStart, DF).isEqual(LocalDateTime.parse(rangeEnd, DF))) {
             log.error("Incorrect request parameter, rangeStart={}, rangeEnd={}",
                     rangeStart, rangeEnd);
             throw new BadRequestException(String
                     .format("Incorrect request parameter, rangeStart=%s, rangeEnd=%s",
                             rangeStart, rangeEnd));
         }
-        if (rangeStart.isBlank() || rangeEnd.isBlank()) {
-            rangeStart = LocalDateTime.now().format(DF);
-            rangeEnd = LocalDateTime.MAX.format(DF);
-        }
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
         return eventRepository.findAllEventsWithRequestsViews(text, categories, paid,
-                        rangeStart, rangeEnd, pageable).stream()
+                        start, end, pageable).stream()
                 .map(EventMapper::toShortDto)
                 .collect(Collectors.toList());
     }
@@ -70,9 +71,11 @@ public class EventServiceImpl implements EventService {
                                            String rangeStart, String rangeEnd,
                                            Integer from, Integer size) {
         int page = from / size;
+        LocalDateTime start = LocalDateTime.parse(rangeStart, DF);
+        LocalDateTime end = LocalDateTime.parse(rangeEnd, DF);
         Pageable pageable = PageRequest.of(page, size);
         return eventRepository.findAllEventsWithRequestsViews(users, states, categories,
-                        rangeStart, rangeEnd, pageable).stream()
+                        start, end, pageable).stream()
                 .map(EventMapper::toFullDto)
                 .collect(Collectors.toList());
     }
