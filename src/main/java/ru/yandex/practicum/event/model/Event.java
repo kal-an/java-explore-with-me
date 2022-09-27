@@ -73,11 +73,7 @@ public class Event {
     @OneToMany(mappedBy = "event")
     private List<Request> requests;
 
-    @ManyToMany
-    @JoinTable(
-            name = "events_compilations",
-            joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "compilation_id"))
+    @ManyToMany(mappedBy = "events")
     private Set<Compilation> compilations;
 
 }
