@@ -41,4 +41,16 @@ public class ErrorHandler {
     public ApiError handleNotFound(final RuntimeException e) {
         return new ApiError(e.getStackTrace(), e.getMessage(), LocalDateTime.now());
     }
+
+    @ExceptionHandler({BadRequestException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleBadRequest(final RuntimeException e) {
+        return new ApiError(e.getStackTrace(), e.getMessage(), LocalDateTime.now());
+    }
+
+    @ExceptionHandler({ConflictEntityException.class})
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleConflict(final RuntimeException e) {
+        return new ApiError(e.getStackTrace(), e.getMessage(), LocalDateTime.now());
+    }
 }
