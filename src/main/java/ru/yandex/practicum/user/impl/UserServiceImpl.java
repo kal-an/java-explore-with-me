@@ -25,6 +25,7 @@ import ru.yandex.practicum.user.model.User;
 import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,7 +59,10 @@ public class UserServiceImpl implements UserService {
                 new UserNotFoundException(String
                         .format("User with id=%d was not found.", userId)));
         final EventFullDto eventDto = eventService.getEvent(eventId);
-        if (userId.equals(userInDb.getId()) && eventId.equals(eventDto.getId())
+        final Optional<Request> optionalRequest = requestRepository
+                .findByEventIdAndRequesterId(eventId, userId);
+
+        if (optionalRequest.isPresent()
             || eventDto.getInitiator().getId().equals(userId)
             || !eventDto.getState().equals(State.PUBLISHED.name())
             || eventDto.getConfirmedRequests() >= eventDto.getParticipantLimit()
