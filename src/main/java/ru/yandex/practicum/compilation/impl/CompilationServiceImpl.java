@@ -1,5 +1,9 @@
 package ru.yandex.practicum.compilation.impl;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.compilation.CompilationMapper;
 import ru.yandex.practicum.compilation.CompilationNotFoundException;
 import ru.yandex.practicum.compilation.CompilationRepository;
@@ -7,32 +11,45 @@ import ru.yandex.practicum.compilation.CompilationService;
 import ru.yandex.practicum.compilation.dto.CompilationDto;
 import ru.yandex.practicum.compilation.dto.NewCompilationDto;
 import ru.yandex.practicum.compilation.model.Compilation;
+import ru.yandex.practicum.event.EventMapper;
+import ru.yandex.practicum.event.EventRepository;
+import ru.yandex.practicum.event.dto.EventShortDto;
 import ru.yandex.practicum.event.model.Event;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
+import ru.yandex.practicum.event.model.EventWithRequestsViews;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class CompilationServiceImpl implements CompilationService {
 
     private final CompilationRepository compilationRepository;
+    private final EventRepository eventRepository;
 
-    public CompilationServiceImpl(CompilationRepository compilationRepository) {
+    public CompilationServiceImpl(CompilationRepository compilationRepository,
+                                  EventRepository eventRepository) {
         this.compilationRepository = compilationRepository;
+        this.eventRepository = eventRepository;
     }
 
     @Override
     public List<CompilationDto> getCompilations(Boolean pinned, Integer from, Integer size) {
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
-        return compilationRepository.findAllByPinned(pinned, pageable).stream()
-                .map(CompilationMapper::toDto)
-                .collect(Collectors.toList());
+        final List<Compilation> compilations = compilationRepository
+                .findAllByPinned(pinned, pageable);
+        final List<CompilationDto> result = new ArrayList<>();
+        for (Compilation compilation : compilations) {
+            final List<EventWithRequestsViews> eventsCustom = eventRepository
+                    .findByCompilationIdWithRequestsViews(compilation.getId());
+            final List<EventShortDto> shortDtoList = EventMapper.toShortDtoList(eventsCustom);
+            final CompilationDto compilationDto = CompilationMapper.toDto(compilation);
+            compilationDto.setEvents(shortDtoList);
+            result.add(compilationDto);
+        }
+        return result;
     }
 
     @Override
@@ -40,20 +57,31 @@ public class CompilationServiceImpl implements CompilationService {
         final Compilation compInDb = compilationRepository.findById(id).orElseThrow(() ->
                 new CompilationNotFoundException(String
                         .format("Compilation with id=%d was not found.", id)));
-        return CompilationMapper.toDto(compInDb);
+        final List<EventWithRequestsViews> eventsCustom = eventRepository
+                .findByCompilationIdWithRequestsViews(id);
+        final List<EventShortDto> shortDtoList = EventMapper.toShortDtoList(eventsCustom);
+        final CompilationDto compilationDto = CompilationMapper.toDto(compInDb);
+        compilationDto.setEvents(shortDtoList);
+        return compilationDto;
     }
 
     @Override
     public CompilationDto createCompilation(NewCompilationDto newDto) {
-        final Compilation compilation = CompilationMapper.toCompilation(
-                CompilationDto.builder()
-                        .events(newDto.getEvents())
-                        .title(newDto.getTitle())
-                        .pinned(newDto.getPinned())
-                        .build());
+        final CompilationDto dto = CompilationDto.builder()
+                .title(newDto.getTitle())
+                .pinned(newDto.getPinned())
+                .build();
+        final Compilation compilation = CompilationMapper.toCompilation(dto);
+        final List<Event> events = eventRepository.findAllById(newDto.getEvents());
+        compilation.setEvents(new HashSet<>(events));
         final Compilation savedCompilation = compilationRepository.save(compilation);
         log.info("Compilation {} created", savedCompilation);
-        return CompilationMapper.toDto(savedCompilation);
+        final List<EventWithRequestsViews> eventsCustom = eventRepository
+                .findByEventIdWithRequestsViews(newDto.getEvents());
+        final List<EventShortDto> shortDtoList = EventMapper.toShortDtoList(eventsCustom);
+        final CompilationDto compilationDto = CompilationMapper.toDto(savedCompilation);
+        compilationDto.setEvents(shortDtoList);
+        return compilationDto;
     }
 
     @Override
