@@ -14,6 +14,8 @@ public interface EventRepositoryCustom {
 
     List<EventWithRequestsViews> findByEventIdWithRequestsViews(List<Integer> eventIds);
 
+    List<EventWithRequestsViews> findByCompilationIdWithRequestsViews(Integer compilationId);
+
     List<EventWithRequestsViews> findByInitiatorIdWithRequestsViews(Integer userID,
                                                                     Pageable pageable);
 

@@ -91,4 +91,19 @@ public interface EventRepository extends JpaRepository<Event, Integer>, EventRep
                                           LocalDateTime rangeStart,
                                           LocalDateTime rangeEnd, Pageable pageable);
 
+    @Query("select e.id as id, e.annotation as annotation, e.category as category, " +
+            "e.eventDate as eventDate, e.initiator as initiator, e.paid as paid, " +
+            "e.title as title, e.description as description, e.createdOn as createdOn, " +
+            "e.participantLimit as participantLimit, e.publishedOn as publishedOn, " +
+            "e.requestModeration as requestModeration, e.state as state, e.lat as lat, " +
+            "e.lon as lon, count(r.id) as requests " +
+            "from Compilation comp " +
+            "join comp.events as e " +
+            "left join e.category c " +
+            "left join e.initiator u " +
+            "left join e.requests r " +
+            "where comp.id = ?1 " +
+            "group by e.id, c.id, u.id")
+    List<EventWithRequests> findAllByCompilationId(Integer compilationId);
+
 }
