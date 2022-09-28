@@ -269,4 +269,14 @@ public class EventServiceImpl implements EventService {
         return EventMapper.toFullDto(eventInDb);
     }
 
+    @Override
+    public List<EventShortDto> getEventsForSubscriber(Integer subscriberId,
+                                                      Pageable pageable) {
+        return eventRepository
+                .findByFollowerIdIdWithRequestsViews(subscriberId, LocalDateTime.now(), pageable)
+                .stream()
+                .map(EventMapper::toShortDto)
+                .collect(Collectors.toList());
+    }
+
 }

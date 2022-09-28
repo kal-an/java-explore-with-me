@@ -7,6 +7,8 @@ import ru.yandex.practicum.explore.event.dto.UpdateEventRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.explore.request.dto.ParticipationRequestDto;
+import ru.yandex.practicum.explore.subscription.dto.SubscriptionDto;
+import ru.yandex.practicum.explore.user.dto.UserShortDto;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -110,5 +112,47 @@ public class UserController {
             @PathVariable Integer eventId) {
         log.info("Reject request={}, event={} user={}", reqId, eventId, userId);
         return userService.rejectRequest(userId, reqId, eventId);
+    }
+
+    @GetMapping
+    public List<UserShortDto> getUsers(
+            @RequestParam(required = false, defaultValue = "0") Integer from,
+            @RequestParam(required = false, defaultValue = "10") Integer size) {
+        log.info("Getting users");
+        return userService.getUsers(from, size);
+    }
+
+    @PostMapping("/{userId}/subscriptions")
+    public void subscribeToUser(
+            @PathVariable Integer userId,
+            @RequestParam Integer otherId) {
+        log.info("Subscribe userId={}, otherId={}", userId, otherId);
+        userService.subscribeToUser(userId, otherId);
+    }
+
+    @PatchMapping("/{userId}/subscriptions/{subscriberId}")
+    public void unSubscribe(
+            @PathVariable Integer userId,
+            @PathVariable Integer subscriberId) {
+        log.info("Unsubscribe userId={}, subscriberId={}", userId, subscriberId);
+        userService.unSubscribe(userId, subscriberId);
+    }
+
+    @GetMapping("/events")
+    public List<EventShortDto> getEventsForSubscriber(
+            @RequestParam Integer subscriberId,
+            @RequestParam(required = false, defaultValue = "0") Integer from,
+            @RequestParam(required = false, defaultValue = "10") Integer size) {
+        log.info("Getting events, subscriberId={}", subscriberId);
+        return userService.getEventsForSubscriber(subscriberId, from, size);
+    }
+
+    @PostMapping("/{userId}/subscriptions")
+    public List<SubscriptionDto> getSubscriptions(
+            @PathVariable Integer userId,
+            @RequestParam(required = false, defaultValue = "0") Integer from,
+            @RequestParam(required = false, defaultValue = "10") Integer size) {
+        log.info("Getting subscriptions, subscriberId={}", userId);
+        return userService.getSubscriptions(userId, from, size);
     }
 }
