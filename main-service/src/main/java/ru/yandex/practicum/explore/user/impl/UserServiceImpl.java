@@ -271,6 +271,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<SubscriptionDto> getSubscriptions(Integer subscriberId,
                                                   Integer from, Integer size) {
+        userRepository.findById(subscriberId).orElseThrow(() ->
+                new UserNotFoundException(String
+                        .format("User with id=%d was not found.", subscriberId)));
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
         return subscriptionRepository.findAllByFollowerId(subscriberId, pageable).stream()
