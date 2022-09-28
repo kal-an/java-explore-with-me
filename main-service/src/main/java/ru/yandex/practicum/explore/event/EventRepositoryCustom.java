@@ -33,4 +33,8 @@ public interface EventRepositoryCustom {
                                                                 LocalDateTime rangeStart,
                                                                 LocalDateTime rangeEnd,
                                                            Pageable pageable);
+
+    List<EventWithRequestsViews> findByFollowerIdIdWithRequestsViews(Integer followerId,
+                                                                      LocalDateTime currentTime,
+                                                                      Pageable pageable);
 }

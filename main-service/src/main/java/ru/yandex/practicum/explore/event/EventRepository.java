@@ -108,4 +108,20 @@ public interface EventRepository extends JpaRepository<Event, Integer>, EventRep
             "group by e.id, c.id, u.id")
     List<EventWithRequests> findAllByCompilationId(Integer compilationId);
 
+
+    @Query("select e.id as id, e.annotation as annotation, e.category as category, " +
+            "e.eventDate as eventDate, e.initiator as initiator, e.paid as paid, " +
+            "e.title as title, e.description as description, e.createdOn as createdOn, " +
+            "e.participantLimit as participant_limit, e.publishedOn as publishedOn, " +
+            "e.requestModeration as request_moderation, e.state as state, e.lat as lat, " +
+            "e.lon as lon, count(r.id) as requests " +
+            "from Event as e " +
+            "left join e.category c " +
+            "left join e.initiator u " +
+            "left join e.requests r " +
+            "left join Subscription s " +
+            "where s.follower.id = ?1 and e.state = 'PUBLISHED' and eventDate > ?2 " +
+            "group by e.id, c.id, u.id")
+    List<EventWithRequests> findAllByFollowerId(Integer followerId, LocalDateTime currentTime,
+                                                Pageable pageable);
 }

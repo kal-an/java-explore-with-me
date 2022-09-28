@@ -130,4 +130,22 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
         return result;
     }
 
+    @Override
+    public List<EventWithRequestsViews> findByFollowerIdIdWithRequestsViews(Integer followerId,
+                                                            LocalDateTime currentTime,
+                                                            Pageable pageable) {
+        List<EventWithRequests> events =  eventRepository
+                .findAllByFollowerId(followerId, currentTime, pageable);
+        List<String> uriList = new ArrayList<>();
+        List<EventWithRequestsViews> result = new ArrayList<>();
+        events.forEach(event -> uriList.add("/events/" + event.getId()));
+        Map<String, ViewStats> stats = statsProvider.getViewStats("", "", uriList, false);
+        events.forEach(event -> {
+            String uri = "/events/" + event.getId();
+            int views = stats.get(uri) != null ? stats.get(uri).getHits() : 0;
+            result.add(new EventWithRequestsViews(event, views));
+        });
+        return result;
+    }
+
 }

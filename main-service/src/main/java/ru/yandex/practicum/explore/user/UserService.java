@@ -5,6 +5,8 @@ import ru.yandex.practicum.explore.event.dto.EventShortDto;
 import ru.yandex.practicum.explore.event.dto.NewEventDto;
 import ru.yandex.practicum.explore.event.dto.UpdateEventRequest;
 import ru.yandex.practicum.explore.request.dto.ParticipationRequestDto;
+import ru.yandex.practicum.explore.subscription.dto.SubscriptionDto;
+import ru.yandex.practicum.explore.user.dto.UserShortDto;
 
 import javax.validation.constraints.Min;
 import java.util.List;
@@ -34,4 +36,16 @@ public interface UserService {
 
     ParticipationRequestDto rejectRequest(Integer userId,
                                           Integer reqId, Integer eventId);
+
+    List<UserShortDto> getUsers(@Min(0) Integer from, @Min(1) Integer size);
+
+    void subscribeToUser(Integer userId, Integer otherId);
+
+    void unSubscribe(Integer userId, Integer otherId);
+
+    List<EventShortDto> getEventsForSubscriber(Integer subscriberId,
+                                                @Min(0) Integer from, @Min(1) Integer size);
+
+    List<SubscriptionDto> getSubscriptions(Integer subscriberId,
+                                           @Min(0) Integer from, @Min(1) Integer size);
 }
