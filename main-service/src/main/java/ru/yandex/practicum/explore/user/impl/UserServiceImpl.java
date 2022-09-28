@@ -248,7 +248,7 @@ public class UserServiceImpl implements UserService {
             throw new ForbiddenException(
                     String.format("User id=%d couldn't be unsubscribe userId=%d", otherId, userId));
         }
-        subscriptionRepository.deleteByUserIdAndFollowerId(userId, otherId);
+        subscriptionRepository.delete(optional.get());
         log.info("Subscription {} deleted", optional.get());
     }
 
