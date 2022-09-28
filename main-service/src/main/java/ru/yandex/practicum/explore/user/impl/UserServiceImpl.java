@@ -1,5 +1,10 @@
 package ru.yandex.practicum.explore.user.impl;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.explore.event.EventMapper;
 import ru.yandex.practicum.explore.event.EventService;
 import ru.yandex.practicum.explore.event.dto.EventFullDto;
@@ -8,18 +13,21 @@ import ru.yandex.practicum.explore.event.dto.NewEventDto;
 import ru.yandex.practicum.explore.event.dto.UpdateEventRequest;
 import ru.yandex.practicum.explore.event.model.State;
 import ru.yandex.practicum.explore.exception.ForbiddenException;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.explore.request.RequestMapper;
 import ru.yandex.practicum.explore.request.RequestNotFoundException;
 import ru.yandex.practicum.explore.request.RequestRepository;
 import ru.yandex.practicum.explore.request.dto.ParticipationRequestDto;
 import ru.yandex.practicum.explore.request.model.Request;
 import ru.yandex.practicum.explore.request.model.Status;
+import ru.yandex.practicum.explore.subscription.SubscriptionMapper;
+import ru.yandex.practicum.explore.subscription.SubscriptionRepository;
+import ru.yandex.practicum.explore.subscription.dto.SubscriptionDto;
+import ru.yandex.practicum.explore.subscription.model.Subscription;
+import ru.yandex.practicum.explore.user.UserMapper;
 import ru.yandex.practicum.explore.user.UserNotFoundException;
 import ru.yandex.practicum.explore.user.UserRepository;
 import ru.yandex.practicum.explore.user.UserService;
+import ru.yandex.practicum.explore.user.dto.UserShortDto;
 import ru.yandex.practicum.explore.user.model.User;
 
 import javax.validation.constraints.Min;
@@ -36,13 +44,16 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RequestRepository requestRepository;
     private final EventService eventService;
+    private final SubscriptionRepository subscriptionRepository;
 
     public UserServiceImpl(UserRepository userRepository,
                            RequestRepository requestRepository,
-                           EventService eventService) {
+                           EventService eventService,
+                           SubscriptionRepository subscriptionRepository) {
         this.userRepository = userRepository;
         this.requestRepository = requestRepository;
         this.eventService = eventService;
+        this.subscriptionRepository = subscriptionRepository;
     }
 
     @Override
@@ -196,4 +207,75 @@ public class UserServiceImpl implements UserService {
         log.info("Request {} rejected", savedRequest);
         return RequestMapper.toDto(savedRequest);
     }
+
+    @Override
+    public List<UserShortDto> getUsers(Integer from, Integer size) {
+        int page = from / size;
+        Pageable pageable = PageRequest.of(page, size);
+        return userRepository.findAllUsers(pageable).stream()
+                .map(UserMapper::toShortDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void subscribeToUser(Integer userId, Integer otherId) {
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new UserNotFoundException(String
+                        .format("User with id=%d was not found.", userId)));
+        User otherUser = userRepository.findById(otherId).orElseThrow(() ->
+                new UserNotFoundException(String
+                        .format("User with id=%d was not found.", otherId)));
+        final Optional<Subscription> optional = subscriptionRepository
+                .findByUserIdAndFollowerId(userId, otherId);
+        if (optional.isPresent()) {
+            throw new ForbiddenException(
+                    String.format("User id=%d couldn't be subscriber userId=%d", userId, otherId));
+        }
+        final Subscription subscription = Subscription.builder()
+                .user(user)
+                .follower(otherUser)
+                .build();
+        final Subscription savedInDb = subscriptionRepository.save(subscription);
+        log.info("Subscription {} added", savedInDb);
+    }
+
+    @Override
+    public void unSubscribe(Integer userId, Integer otherId) {
+        userRepository.findById(userId).orElseThrow(() ->
+                new UserNotFoundException(String
+                        .format("User with id=%d was not found.", userId)));
+        userRepository.findById(otherId).orElseThrow(() ->
+                new UserNotFoundException(String
+                        .format("User with id=%d was not found.", otherId)));
+        final Optional<Subscription> optional = subscriptionRepository
+                .findByUserIdAndFollowerId(userId, otherId);
+        if (optional.isEmpty()) {
+            throw new ForbiddenException(
+                    String.format("User id=%d couldn't be unsubscribe userId=%d", otherId, userId));
+        }
+        subscriptionRepository.deleteByUserIdAndFollowerId(userId, otherId);
+        log.info("Subscription {} deleted", optional.get());
+    }
+
+    @Override
+    public List<EventShortDto> getEventsForSubscriber(Integer subscriberId,
+                                                       Integer from, Integer size) {
+        userRepository.findById(subscriberId).orElseThrow(() ->
+                new UserNotFoundException(String
+                        .format("User with id=%d was not found.", subscriberId)));
+        int page = from / size;
+        Pageable pageable = PageRequest.of(page, size);
+        return eventService.getEventsForSubscriber(subscriberId, pageable);
+    }
+
+    @Override
+    public List<SubscriptionDto> getSubscriptions(Integer subscriberId,
+                                                  Integer from, Integer size) {
+        int page = from / size;
+        Pageable pageable = PageRequest.of(page, size);
+        return subscriptionRepository.findAllByFollowerId(subscriberId, pageable).stream()
+                .map(SubscriptionMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
 }
