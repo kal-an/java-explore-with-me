@@ -147,7 +147,7 @@ public class UserController {
         return userService.getEventsForSubscriber(subscriberId, from, size);
     }
 
-    @PostMapping("/{userId}/subscriptions")
+    @GetMapping("/{userId}/subscriptions")
     public List<SubscriptionDto> getSubscriptions(
             @PathVariable Integer userId,
             @RequestParam(required = false, defaultValue = "0") Integer from,
