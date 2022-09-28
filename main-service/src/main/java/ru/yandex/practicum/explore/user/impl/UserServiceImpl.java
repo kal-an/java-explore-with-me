@@ -1,10 +1,10 @@
 package ru.yandex.practicum.explore.user.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.explore.event.EventMapper;
 import ru.yandex.practicum.explore.event.EventService;
 import ru.yandex.practicum.explore.event.dto.EventFullDto;
