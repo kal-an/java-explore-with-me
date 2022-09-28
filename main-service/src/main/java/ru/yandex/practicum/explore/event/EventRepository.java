@@ -117,8 +117,8 @@ public interface EventRepository extends JpaRepository<Event, Integer>, EventRep
             "left join e.category c " +
             "left join e.initiator u " +
             "left join e.requests r " +
-            "left join Subscription s " +
-            "where s.follower.id = ?1 and e.state = 'PUBLISHED' and eventDate > ?2 " +
+            "left join Subscription s on s.user.id = u.id " +
+            "where s.follower.id = ?1 and e.state = 'PUBLISHED' and e.eventDate > ?2 " +
             "group by e.id, c.id, u.id")
     List<EventWithRequests> findAllByFollowerId(Integer followerId, LocalDateTime currentTime,
                                                 Pageable pageable);
