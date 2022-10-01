@@ -2,7 +2,8 @@ package ru.yandex.practicum.explore.request.dto;
 
 import lombok.*;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Setter
@@ -23,6 +24,6 @@ public class ParticipationRequestDto {
     @NotNull(message = "Requester ID should not be null")
     private Integer requester;
 
-    @NotNull(message = "Status should not be null")
+    @NotBlank(message = "Status should not be null")
     private String status;
 }

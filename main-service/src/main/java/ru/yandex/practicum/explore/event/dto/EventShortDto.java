@@ -5,7 +5,7 @@ import lombok.*;
 import ru.yandex.practicum.explore.category.dto.CategoryDto;
 import ru.yandex.practicum.explore.user.dto.UserShortDto;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -18,7 +18,7 @@ public class EventShortDto {
 
     private Integer id;
 
-    @NotEmpty(message = "Name should not be empty")
+    @NotBlank(message = "Name should not be empty")
     @Size(min = 20, max = 2000, message = "Annotation should less 2000 and greater 20 characters")
     private String annotation;
 
@@ -27,7 +27,7 @@ public class EventShortDto {
 
     private Long confirmedRequests;
 
-    @NotEmpty(message = "Event date should not be empty")
+    @NotBlank(message = "Event date should not be empty")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private String eventDate;
 
@@ -36,7 +36,7 @@ public class EventShortDto {
 
     private Boolean paid;
 
-    @NotEmpty(message = "Title should not be empty")
+    @NotBlank(message = "Title should not be empty")
     @Size(min = 3, max = 120, message = "Title should less 120 and greater 3 characters")
     private String title;
 
