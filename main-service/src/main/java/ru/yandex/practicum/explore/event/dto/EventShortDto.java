@@ -34,7 +34,7 @@ public class EventShortDto {
     @NotNull(message = "Initiator should not be null")
     private UserShortDto initiator;
 
-    private Boolean paid;
+    private boolean paid;
 
     @NotBlank(message = "Title should not be empty")
     @Size(min = 3, max = 120, message = "Title should less 120 and greater 3 characters")

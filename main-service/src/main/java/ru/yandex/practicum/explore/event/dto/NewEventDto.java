@@ -32,7 +32,7 @@ public class NewEventDto {
     @NotNull(message = "Location should not be null")
     private Location location;
 
-    private Boolean paid;
+    private boolean paid;
 
     @NotNull(message = "Limit should not be null")
     private Integer participantLimit;

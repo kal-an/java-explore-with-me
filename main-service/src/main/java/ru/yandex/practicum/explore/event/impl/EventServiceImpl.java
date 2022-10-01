@@ -186,7 +186,7 @@ public class EventServiceImpl implements EventService {
                 .annotation(newDto.getAnnotation())
                 .category(CategoryMapper.toCategory(CategoryMapper.toDto(category)))
                 .eventDate(newDto.getEventDate())
-                .paid(newDto.getPaid())
+                .paid(newDto.isPaid())
                 .title(newDto.getTitle())
                 .description(newDto.getDescription())
                 .createdOn(LocalDateTime.now())

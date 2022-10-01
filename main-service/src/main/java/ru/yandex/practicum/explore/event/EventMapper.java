@@ -86,7 +86,7 @@ public class EventMapper {
                 .annotation(dto.getAnnotation())
                 .category(CategoryMapper.toCategory(dto.getCategory()))
                 .eventDate(LocalDateTime.parse(dto.getEventDate(), DF))
-                .paid(dto.getPaid())
+                .paid(dto.isPaid())
                 .title(dto.getTitle())
                 .description(dto.getDescription())
                 .createdOn(LocalDateTime.parse(dto.getCreatedOn(), DF))
