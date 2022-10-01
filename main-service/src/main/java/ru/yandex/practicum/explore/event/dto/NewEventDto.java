@@ -46,7 +46,7 @@ public class NewEventDto {
     @Builder
     @Setter
     @Getter
-    public static class Location{
+    public static class Location {
         private Double lat;
         private Double lon;
     }
