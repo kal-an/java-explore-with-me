@@ -1,8 +1,14 @@
 package ru.yandex.practicum.explore.request;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import ru.yandex.practicum.explore.request.dto.ParticipationRequestDto;
 import ru.yandex.practicum.explore.request.model.Request;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RequestMapper {
 
     public static ParticipationRequestDto toDto(Request request) {
@@ -20,5 +26,13 @@ public class RequestMapper {
                 .id(dto.getId())
                 .created(dto.getCreated())
                 .build();
+    }
+
+    public static List<ParticipationRequestDto> toDtoList(Iterable<Request> requests) {
+        List<ParticipationRequestDto> dtos = new ArrayList<>();
+        for (Request request : requests) {
+            dtos.add(toDto(request));
+        }
+        return dtos;
     }
 }
