@@ -104,7 +104,7 @@ public class EventServiceImpl implements EventService {
         final Event savedInDb = eventRepository.findById(updateDto.getEventId()).orElseThrow(() ->
                 new EventNotFoundException(String.format("Event with id=%d was not found.",
                                 updateDto.getEventId())));
-        if (savedInDb.getState().equals(State.PUBLISHED)
+        if (savedInDb.isPublished()
                 || LocalDateTime.now().plusHours(2)
                 .isAfter(LocalDateTime.parse(updateDto.getEventDate(), DF))) {
             log.error("Event id={} couldn't be updated", savedInDb.getId());
@@ -127,7 +127,7 @@ public class EventServiceImpl implements EventService {
         if (updateDto.getRequestModeration() != null)
             savedInDb.setRequestModeration(updateDto.getRequestModeration());
         if (updateDto.getTitle() != null) savedInDb.setTitle(updateDto.getTitle());
-        if (savedInDb.getState().equals(State.CANCELED)) {
+        if (savedInDb.isCanceled()) {
             savedInDb.setState(State.PENDING);
         }
         final Event updatedEvent = eventRepository.save(savedInDb);
@@ -211,7 +211,7 @@ public class EventServiceImpl implements EventService {
         final Event savedInDb = eventRepository.findById(eventId).orElseThrow(() ->
                 new EventNotFoundException(String
                         .format("Event with id=%d was not found.", eventId)));
-        if (!savedInDb.getState().equals(State.PENDING)) {
+        if (!savedInDb.isPending()) {
             log.error("Event id={} couldn't be canceled", savedInDb.getId());
             throw new ForbiddenException(
                     String.format("Event id=%d couldn't be canceled", savedInDb.getId()));
@@ -231,7 +231,7 @@ public class EventServiceImpl implements EventService {
         final Event savedInDb = eventRepository.findById(eventId).orElseThrow(() ->
                 new EventNotFoundException(String
                         .format("Event with id=%d was not found.", eventId)));
-        if (!savedInDb.getState().equals(State.PENDING)
+        if (!savedInDb.isPending()
                 || LocalDateTime.now().plusHours(1)
                 .isAfter(savedInDb.getEventDate())) {
             log.error("Event id={} couldn't be published", savedInDb.getId());
@@ -254,7 +254,7 @@ public class EventServiceImpl implements EventService {
         final Event savedInDb = eventRepository.findById(eventId).orElseThrow(() ->
                 new EventNotFoundException(String
                         .format("Event with id=%d was not found.", eventId)));
-        if (savedInDb.getState().equals(State.PUBLISHED)) {
+        if (savedInDb.isPublished()) {
             log.error("Event id={} couldn't be rejected", savedInDb.getId());
             throw new ForbiddenException(
                     String.format("Event id=%d couldn't be rejected", savedInDb.getId()));

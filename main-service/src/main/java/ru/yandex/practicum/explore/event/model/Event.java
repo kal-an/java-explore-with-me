@@ -76,4 +76,18 @@ public class Event {
     @ManyToMany(mappedBy = "events")
     private Set<Compilation> compilations;
 
+    @Transient
+    public boolean isPublished() {
+        return state.equals(State.PUBLISHED);
+    }
+
+    @Transient
+    public boolean isCanceled() {
+        return state.equals(State.CANCELED);
+    }
+
+    @Transient
+    public boolean isPending() {
+        return state.equals(State.PENDING);
+    }
 }
