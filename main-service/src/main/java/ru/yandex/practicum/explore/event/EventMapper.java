@@ -1,6 +1,8 @@
 package ru.yandex.practicum.explore.event;
 
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import ru.yandex.practicum.explore.category.CategoryMapper;
 import ru.yandex.practicum.explore.category.dto.CategoryDto;
 import ru.yandex.practicum.explore.event.dto.EventFullDto;
@@ -11,9 +13,10 @@ import ru.yandex.practicum.explore.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EventMapper {
 
     private static final DateTimeFormatter DF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -38,10 +41,12 @@ public class EventMapper {
                 .build();
     }
 
-    public static List<EventShortDto> toShortDtoList(List<EventWithRequestsViews> events) {
-        return events.stream()
-                .map(EventMapper::toShortDto)
-                .collect(Collectors.toList());
+    public static List<EventShortDto> toShortDtoList(Iterable<EventWithRequestsViews> events) {
+        List<EventShortDto> dtos = new ArrayList<>();
+        for (EventWithRequestsViews event : events) {
+            dtos.add(toShortDto(event));
+        }
+        return dtos;
     }
 
     public static EventFullDto toFullDto(EventWithRequestsViews event) {
