@@ -69,7 +69,7 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto createCompilation(NewCompilationDto newDto) {
         final CompilationDto dto = CompilationDto.builder()
                 .title(newDto.getTitle())
-                .pinned(newDto.getPinned())
+                .pinned(newDto.isPinned())
                 .build();
         final Compilation compilation = CompilationMapper.toCompilation(dto);
         final List<Event> events = eventRepository.findAllById(newDto.getEvents());
