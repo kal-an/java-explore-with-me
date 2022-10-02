@@ -140,7 +140,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventFullDto updateEvent(Integer eventId, AdminUpdateEventRequest updateDto) {
+    public EventFullDto updateEventByAdmin(Integer eventId, AdminUpdateEventRequest updateDto) {
         final Event savedInDb = eventRepository.findById(eventId).orElseThrow(() ->
                 new EventNotFoundException(String
                         .format("Event with id=%d was not found.", eventId)));

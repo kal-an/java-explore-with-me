@@ -56,7 +56,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public EventFullDto updateEvent(Integer eventId,
                                     AdminUpdateEventRequest updateDto) {
-        return eventService.updateEvent(eventId, updateDto);
+        return eventService.updateEventByAdmin(eventId, updateDto);
     }
 
     @Override

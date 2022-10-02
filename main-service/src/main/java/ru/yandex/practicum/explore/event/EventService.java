@@ -25,7 +25,7 @@ public interface EventService {
 
     EventFullDto updateEvent(UpdateEventRequest updateDto);
 
-    EventFullDto updateEvent(Integer eventId, AdminUpdateEventRequest updateDto);
+    EventFullDto updateEventByAdmin(Integer eventId, AdminUpdateEventRequest updateDto);
 
     EventFullDto createEvent(NewEventDto dto, User user);
 
