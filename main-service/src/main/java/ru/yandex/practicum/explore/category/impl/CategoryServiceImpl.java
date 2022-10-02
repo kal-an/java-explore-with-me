@@ -1,5 +1,6 @@
 package ru.yandex.practicum.explore.category.impl;
 
+import org.hibernate.exception.ConstraintViolationException;
 import ru.yandex.practicum.explore.category.CategoryMapper;
 import ru.yandex.practicum.explore.category.CategoryNotFoundException;
 import ru.yandex.practicum.explore.category.CategoryRepository;
@@ -10,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.explore.exception.ConflictEntityException;
+import ru.yandex.practicum.explore.exception.ForbiddenException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -63,7 +66,12 @@ public class CategoryServiceImpl implements CategoryService {
         final Category inDb = categoryRepository.findById(id).orElseThrow(() ->
                 new CategoryNotFoundException(String
                         .format("Category with id=%d was not found.", id)));
+        try {
+            categoryRepository.delete(inDb);
+        } catch (ConstraintViolationException e) {
+            log.error("Category {} couldn't be deleted", id);
+            throw new ConflictEntityException(String.format("Category %d couldn't be deleted", id));
+        }
         log.info("Category {} deleted", inDb);
-        categoryRepository.delete(inDb);
     }
 }
