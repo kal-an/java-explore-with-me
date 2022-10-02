@@ -46,8 +46,9 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new CategoryNotFoundException(String
                         .format("Category with id=%d was not found.", updateDto.getId())));
         if (updateDto.getName() != null) inDb.setName(updateDto.getName());
-        log.info("Category {} updated", inDb);
-        return CategoryMapper.toDto(inDb);
+        final Category savedCategory = categoryRepository.save(inDb);
+        log.info("Category {} updated", savedCategory);
+        return CategoryMapper.toDto(savedCategory);
     }
 
     @Override
