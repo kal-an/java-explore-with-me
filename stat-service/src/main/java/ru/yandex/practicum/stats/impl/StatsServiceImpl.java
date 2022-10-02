@@ -2,10 +2,12 @@ package ru.yandex.practicum.stats.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.stats.AppRepository;
 import ru.yandex.practicum.stats.StatRepository;
 import ru.yandex.practicum.stats.StatsService;
 import ru.yandex.practicum.stats.dto.EndpointHit;
 import ru.yandex.practicum.stats.dto.ViewStats;
+import ru.yandex.practicum.stats.model.App;
 import ru.yandex.practicum.stats.model.Hit;
 
 import java.net.URLDecoder;
@@ -13,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,10 +23,12 @@ import java.util.stream.Collectors;
 public class StatsServiceImpl implements StatsService {
 
     private final StatRepository repository;
+    private final AppRepository appRepository;
     private static final DateTimeFormatter DF = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public StatsServiceImpl(StatRepository repository) {
+    public StatsServiceImpl(StatRepository repository, AppRepository appRepository) {
         this.repository = repository;
+        this.appRepository = appRepository;
     }
 
     @Override
@@ -42,9 +47,20 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public void addHit(EndpointHit newDto) {
+        final Optional<App> optionalApp = appRepository.findByApp(newDto.getApp());
+        App savedApp;
+        if (optionalApp.isPresent()) {
+            savedApp = optionalApp.get();
+        } else {
+            App app = App.builder()
+                    .app(newDto.getApp())
+                    .build();
+            savedApp = appRepository.save(app);
+            log.info("App {} saved", savedApp);
+        }
         Hit hit = new Hit(
                 newDto.getId(),
-                newDto.getApp(),
+                savedApp,
                 newDto.getUri(),
                 newDto.getIp(),
                 LocalDateTime.now());

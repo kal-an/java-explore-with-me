@@ -20,8 +20,9 @@ public class Hit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
-    private String app;
+    @ManyToOne
+    @JoinColumn(name = "app_id", nullable = false)
+    private App app;
 
     @Column(nullable = false)
     private String uri;

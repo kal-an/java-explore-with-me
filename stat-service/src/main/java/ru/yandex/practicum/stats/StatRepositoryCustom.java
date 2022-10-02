@@ -7,5 +7,6 @@ import java.util.List;
 
 public interface StatRepositoryCustom {
 
+
     List<HitCount> findHitCount(LocalDateTime start, LocalDateTime end, List<String> uris);
 }
