@@ -5,7 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.yandex.practicum.explore.admin.AdminController;
+import ru.yandex.practicum.explore.admin.AdminCategoryController;
+import ru.yandex.practicum.explore.admin.AdminCompilationController;
+import ru.yandex.practicum.explore.admin.AdminEventController;
+import ru.yandex.practicum.explore.admin.AdminUserController;
 import ru.yandex.practicum.explore.category.CategoryController;
 import ru.yandex.practicum.explore.category.CategoryNotFoundException;
 import ru.yandex.practicum.explore.compilation.CompilationController;
@@ -21,7 +24,10 @@ import java.time.LocalDateTime;
 @Slf4j
 @RestControllerAdvice(assignableTypes = {
         UserController.class,
-        AdminController.class,
+        AdminEventController.class,
+        AdminCompilationController.class,
+        AdminCategoryController.class,
+        AdminUserController.class,
         CategoryController.class,
         CompilationController.class,
         EventController.class})
