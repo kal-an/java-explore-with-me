@@ -92,8 +92,9 @@ public class EventRepositoryCustomImpl implements EventRepositoryCustom {
     @Override
     public List<EventWithRequestsViews> findAllEventsWithRequestsViews(String text,
                                                                        List<Integer> categories,
-                                                    Boolean paid, LocalDateTime rangeStart,
-                                                    LocalDateTime rangeEnd, Pageable pageable) {
+                                                    Boolean paid, Boolean onlyAvailable,
+                                                    LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                                   Pageable pageable) {
         List<EventWithRequests> events = eventRepository.findAllEvents(text, categories, paid,
                 rangeStart, rangeEnd, pageable);
         List<String> uriList = new ArrayList<>();

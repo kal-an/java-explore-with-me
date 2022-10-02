@@ -3,6 +3,7 @@ package ru.yandex.practicum.explore.event.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.explore.category.CategoryMapper;
 import ru.yandex.practicum.explore.category.CategoryRepository;
@@ -43,13 +44,24 @@ public class EventServiceImpl implements EventService {
                                             String rangeStart, String rangeEnd,
                                             Boolean onlyAvailable, String sort,
                                             @Min(0) Integer from, @Min(1) Integer size) {
-        LocalDateTime start = null, end = null;
+        LocalDateTime start, end;
         if (rangeStart.isBlank() || rangeEnd.isBlank()) {
             start = LocalDateTime.now();
             end = LocalDateTime.MAX;
+        } else {
+            start = LocalDateTime.parse(rangeStart, DF);
+            end = LocalDateTime.parse(rangeEnd, DF);
         }
-        if (LocalDateTime.parse(rangeStart, DF).isAfter(LocalDateTime.parse(rangeEnd, DF))
-            || LocalDateTime.parse(rangeStart, DF).isEqual(LocalDateTime.parse(rangeEnd, DF))) {
+        Sort sortBy;
+        if (sort.equalsIgnoreCase("VIEWS")) {
+            sortBy = Sort.by(Sort.Direction.DESC, "views");
+        } else if (sort.equalsIgnoreCase("EVENT_DATE")) {
+            sortBy = Sort.by(Sort.Direction.DESC, "eventDate");
+        } else {
+            throw new BadRequestException(String
+                    .format("Incorrect request parameter, sort=%s", sort));
+        }
+        if (start.isAfter(end) || start.isEqual(end)) {
             log.error("Incorrect request parameter, rangeStart={}, rangeEnd={}",
                     rangeStart, rangeEnd);
             throw new BadRequestException(String
@@ -57,9 +69,9 @@ public class EventServiceImpl implements EventService {
                             rangeStart, rangeEnd));
         }
         int page = from / size;
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, sortBy);
         return EventMapper.toShortDtoList(eventRepository.findAllEventsWithRequestsViews(text,
-                categories, paid, start, end, pageable));
+                categories, paid, onlyAvailable, start, end, pageable));
     }
 
     @Override

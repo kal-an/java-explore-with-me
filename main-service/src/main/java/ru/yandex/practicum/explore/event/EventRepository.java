@@ -64,8 +64,8 @@ public interface EventRepository extends JpaRepository<Event, Integer>, EventRep
             "left join e.category c " +
             "left join e.initiator u " +
             "left join e.requests r " +
-            "where upper(e.annotation) like upper(concat('%', ?1, '%')) " +
-            "or upper(e.description) like upper(concat('%', ?1, '%')) " +
+            "where (upper(e.annotation) like upper(concat('%', ?1, '%')) " +
+            "or upper(e.description) like upper(concat('%', ?1, '%'))) " +
             "and c.id in (?2) and e.paid = ?3 and e.state = 'PUBLISHED'" +
             "and e.eventDate >= ?4 and e.eventDate < ?5 " +
             "group by e.id, c.id, u.id")

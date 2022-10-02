@@ -22,6 +22,7 @@ public interface EventRepositoryCustom {
     List<EventWithRequestsViews> findAllEventsWithRequestsViews(String text,
                                                                 List<Integer> categories,
                                                                 Boolean paid,
+                                                                Boolean onlyAvailable,
                                                                 LocalDateTime rangeStart,
                                                                 LocalDateTime rangeEnd,
                                                                 Pageable pageable);
