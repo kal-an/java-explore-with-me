@@ -49,6 +49,14 @@ public class EventMapper {
         return dtos;
     }
 
+    public static List<EventFullDto> toFullDtoList(Iterable<EventWithRequestsViews> events) {
+        List<EventFullDto> dtos = new ArrayList<>();
+        for (EventWithRequestsViews event : events) {
+            dtos.add(toFullDto(event));
+        }
+        return dtos;
+    }
+
     public static EventFullDto toFullDto(EventWithRequestsViews event) {
         final EventFullDto dto = new EventFullDto();
         var location = EventFullDto.Location.builder()

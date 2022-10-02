@@ -1,5 +1,8 @@
 package ru.yandex.practicum.explore.user.impl;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.explore.event.EventMapper;
 import ru.yandex.practicum.explore.event.EventService;
 import ru.yandex.practicum.explore.event.dto.EventFullDto;
@@ -8,9 +11,6 @@ import ru.yandex.practicum.explore.event.dto.NewEventDto;
 import ru.yandex.practicum.explore.event.dto.UpdateEventRequest;
 import ru.yandex.practicum.explore.event.model.State;
 import ru.yandex.practicum.explore.exception.ForbiddenException;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.explore.request.RequestMapper;
 import ru.yandex.practicum.explore.request.RequestNotFoundException;
 import ru.yandex.practicum.explore.request.RequestRepository;
@@ -26,7 +26,6 @@ import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -47,9 +46,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<ParticipationRequestDto> getRequests(Integer userId) {
-        return requestRepository.findByRequesterId(userId).stream()
-                .map(RequestMapper::toDto)
-                .collect(Collectors.toList());
+        return RequestMapper.toDtoList(requestRepository.findByRequesterId(userId));
     }
 
     @Override
@@ -152,9 +149,7 @@ public class UserServiceImpl implements UserService {
                 new UserNotFoundException(String
                         .format("User with id=%d was not found.", userId)));
         eventService.getEvent(eventId);
-        return requestRepository.findByEventId(eventId).stream()
-                .map(RequestMapper::toDto)
-                .collect(Collectors.toList());
+        return RequestMapper.toDtoList(requestRepository.findByEventId(eventId));
     }
 
     @Override

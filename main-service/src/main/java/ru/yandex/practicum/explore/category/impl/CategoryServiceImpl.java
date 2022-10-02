@@ -1,21 +1,19 @@
 package ru.yandex.practicum.explore.category.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.explore.category.CategoryMapper;
 import ru.yandex.practicum.explore.category.CategoryNotFoundException;
 import ru.yandex.practicum.explore.category.CategoryRepository;
 import ru.yandex.practicum.explore.category.CategoryService;
 import ru.yandex.practicum.explore.category.dto.CategoryDto;
 import ru.yandex.practicum.explore.category.model.Category;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 import ru.yandex.practicum.explore.exception.ConflictEntityException;
-import ru.yandex.practicum.explore.exception.ForbiddenException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -31,9 +29,7 @@ public class CategoryServiceImpl implements CategoryService {
     public List<CategoryDto> getCategories(Integer from, Integer size) {
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
-        return categoryRepository.findAll(pageable).stream()
-                .map(CategoryMapper::toDto)
-                .collect(Collectors.toList());
+        return CategoryMapper.toDtoList(categoryRepository.findAll(pageable));
     }
 
     @Override

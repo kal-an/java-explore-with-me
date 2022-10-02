@@ -23,7 +23,6 @@ import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -59,10 +58,8 @@ public class EventServiceImpl implements EventService {
         }
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
-        return eventRepository.findAllEventsWithRequestsViews(text, categories, paid,
-                        start, end, pageable).stream()
-                .map(EventMapper::toShortDto)
-                .collect(Collectors.toList());
+        return EventMapper.toShortDtoList(eventRepository.findAllEventsWithRequestsViews(text,
+                categories, paid, start, end, pageable));
     }
 
     @Override
@@ -74,10 +71,8 @@ public class EventServiceImpl implements EventService {
         LocalDateTime start = LocalDateTime.parse(rangeStart, DF);
         LocalDateTime end = LocalDateTime.parse(rangeEnd, DF);
         Pageable pageable = PageRequest.of(page, size);
-        return eventRepository.findAllEventsWithRequestsViews(users, states, categories,
-                        start, end, pageable).stream()
-                .map(EventMapper::toFullDto)
-                .collect(Collectors.toList());
+        return EventMapper.toFullDtoList(eventRepository.findAllEventsWithRequestsViews(users,
+                states, categories, start, end, pageable));
     }
 
     @Override
@@ -94,9 +89,8 @@ public class EventServiceImpl implements EventService {
                                              @Min(0) Integer from, @Min(1) Integer size) {
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
-        return eventRepository.findByInitiatorIdWithRequestsViews(userId, pageable).stream()
-                .map(EventMapper::toShortDto)
-                .collect(Collectors.toList());
+        return EventMapper.toShortDtoList(eventRepository
+                .findByInitiatorIdWithRequestsViews(userId, pageable));
     }
 
     @Override

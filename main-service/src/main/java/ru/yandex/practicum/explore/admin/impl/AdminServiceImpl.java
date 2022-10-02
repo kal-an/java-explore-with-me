@@ -23,7 +23,6 @@ import ru.yandex.practicum.explore.user.dto.UserDto;
 import ru.yandex.practicum.explore.user.model.User;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -120,15 +119,11 @@ public class AdminServiceImpl implements AdminService {
     public List<UserDto> getUsers(List<Integer> ids,
                                   Integer from, Integer size) {
         if (!ids.isEmpty()) {
-            return adminRepository.findAllById(ids).stream()
-                    .map(UserMapper::toDto)
-                    .collect(Collectors.toList());
+            return UserMapper.toDtoList(adminRepository.findAllById(ids));
         } else {
             int page = from / size;
             Pageable pageable = PageRequest.of(page, size);
-            return adminRepository.findAll(pageable).stream()
-                    .map(UserMapper::toDto)
-                    .collect(Collectors.toList());
+            return UserMapper.toDtoList(adminRepository.findAll(pageable));
         }
     }
 
