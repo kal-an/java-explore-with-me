@@ -29,14 +29,14 @@ public class Event {
     @Column(nullable = false)
     private String annotation;
 
-    @OneToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
     @Column(nullable = false)
     private LocalDateTime eventDate;
 
-    @OneToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "creator_id", nullable = false)
     private User initiator;
 

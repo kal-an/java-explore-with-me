@@ -28,7 +28,7 @@ public class Request {
     @ManyToOne
     private Event event;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "requester_id", nullable = false)
     private User requester;
 
