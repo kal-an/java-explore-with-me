@@ -1,5 +1,6 @@
 package ru.yandex.practicum.explore.admin;
 
+import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.explore.category.dto.CategoryDto;
 import ru.yandex.practicum.explore.compilation.dto.CompilationDto;
 import ru.yandex.practicum.explore.compilation.dto.NewCompilationDto;
@@ -9,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.explore.event.model.State;
 import ru.yandex.practicum.explore.user.dto.UserDto;
+import ru.yandex.practicum.explore.validation.OnCreate;
+import ru.yandex.practicum.explore.validation.OnUpdate;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -62,14 +65,14 @@ public class AdminController {
 
     @PatchMapping("/categories")
     public CategoryDto updateCategory(
-            @Valid @RequestBody CategoryDto updateDto) {
+            @Validated(OnUpdate.class) @RequestBody CategoryDto updateDto) {
         log.info("Update category updateDto={}", updateDto);
         return adminService.updateCategory(updateDto);
     }
 
     @PostMapping("/categories")
     public CategoryDto createCategory(
-            @Valid @RequestBody CategoryDto newDto) {
+            @Validated(OnCreate.class) @RequestBody CategoryDto newDto) {
         log.info("Create category createDto={}", newDto);
         return adminService.createCategory(newDto);
     }
@@ -136,7 +139,7 @@ public class AdminController {
 
     @PostMapping("/users")
     public UserDto addUser(
-            @Valid @RequestBody UserDto newDto) {
+            @Validated(OnCreate.class) @RequestBody UserDto newDto) {
         log.info("Add new user {}", newDto);
         return adminService.addUser(newDto);
     }
