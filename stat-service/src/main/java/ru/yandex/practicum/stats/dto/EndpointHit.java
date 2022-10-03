@@ -3,7 +3,6 @@ package ru.yandex.practicum.stats.dto;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 @Setter
 @Getter
