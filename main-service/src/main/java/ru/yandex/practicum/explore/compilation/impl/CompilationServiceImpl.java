@@ -75,7 +75,7 @@ public class CompilationServiceImpl implements CompilationService {
         final List<Event> events = eventRepository.findAllById(newDto.getEvents());
         compilation.setEvents(new HashSet<>(events));
         final Compilation savedCompilation = compilationRepository.save(compilation);
-        log.info("Compilation {} created", savedCompilation);
+        log.info("Compilation {} created", savedCompilation.getId());
         final List<EventWithRequestsViews> eventsCustom = eventRepository
                 .findByEventIdWithRequestsViews(newDto.getEvents());
         final List<EventShortDto> shortDtoList = EventMapper.toShortDtoList(eventsCustom);
@@ -100,7 +100,7 @@ public class CompilationServiceImpl implements CompilationService {
                         .format("Compilation with id=%d was not found.", compId)));
         compInDb.getEvents().removeIf(event -> event.getId().equals(eventId));
         final Compilation savedCompilation = compilationRepository.save(compInDb);
-        log.info("Event {} removed from compilation {}", eventId, savedCompilation);
+        log.info("Event {} removed from compilation {}", eventId, savedCompilation.getId());
     }
 
     @Override
@@ -110,7 +110,7 @@ public class CompilationServiceImpl implements CompilationService {
                         .format("Compilation with id=%d was not found.", compId)));
         compInDb.getEvents().add(newEvent);
         final Compilation savedCompilation = compilationRepository.save(compInDb);
-        log.info("Event {} removed from compilation {}", newEvent, savedCompilation);
+        log.info("Event {} removed from compilation {}", newEvent, savedCompilation.getId());
     }
 
     @Override
@@ -120,7 +120,7 @@ public class CompilationServiceImpl implements CompilationService {
                         .format("Compilation with id=%d was not found.", compId)));
         compInDb.setPinned(false);
         final Compilation savedCompilation = compilationRepository.save(compInDb);
-        log.info("Compilation {} unpinned", savedCompilation);
+        log.info("Compilation {} unpinned", savedCompilation.getId());
     }
 
     @Override
@@ -130,6 +130,6 @@ public class CompilationServiceImpl implements CompilationService {
                         .format("Compilation with id=%d was not found.", compId)));
         compInDb.setPinned(true);
         final Compilation savedCompilation = compilationRepository.save(compInDb);
-        log.info("Compilation {} pinned", savedCompilation);
+        log.info("Compilation {} pinned", savedCompilation.getId());
     }
 }
