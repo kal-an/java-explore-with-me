@@ -15,7 +15,7 @@ public class UserDto extends UserShortDto {
 
     @Email(message = "Email should be valid")
     @NotBlank(message = "Email should not be empty")
-    @Size(max = 25, message = "Email should less 25 characters")
+    @Size(max = 30, message = "Email should less 30 characters")
     private String email;
 
 }

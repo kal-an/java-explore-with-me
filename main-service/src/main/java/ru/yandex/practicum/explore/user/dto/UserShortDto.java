@@ -22,7 +22,7 @@ public class UserShortDto {
     private Integer id;
 
     @NotBlank(message = "Name should not be empty")
-    @Size(max = 15, message = "Name should less 15 characters")
+    @Size(max = 30, message = "Name should less 30 characters")
     private String name;
 
 }
