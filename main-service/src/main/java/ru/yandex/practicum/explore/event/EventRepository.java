@@ -51,7 +51,8 @@ public interface EventRepository extends JpaRepository<Event, Integer>, EventRep
             "left join e.category c " +
             "left join e.initiator u " +
             "left join e.requests r " +
-            "group by e.id, c.id, u.id")
+            "group by e.id, c.id, u.id " +
+            "order by e.id desc")
     List<EventWithRequests> findByEventIds(List<Integer> eventIds);
 
     @Query("select e.id as id, e.annotation as annotation, e.category as category, " +
