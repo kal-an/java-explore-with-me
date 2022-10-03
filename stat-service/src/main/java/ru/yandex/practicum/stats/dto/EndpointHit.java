@@ -23,5 +23,5 @@ public class EndpointHit {
     @NotNull(message = "IP should not be null")
     private String ip;
 
-    private LocalDateTime timestamp;
+    private String timestamp;
 }
