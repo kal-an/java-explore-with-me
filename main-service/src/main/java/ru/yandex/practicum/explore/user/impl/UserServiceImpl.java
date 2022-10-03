@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService {
             request.setStatus(Status.PENDING);
         }
         final Request savedRequest = requestRepository.save(request);
-        log.info("Request {} saved", savedRequest);
+        log.info("Request {} saved", savedRequest.getId());
         return RequestMapper.toDto(savedRequest);
     }
 
@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService {
                         .format("Request with id=%d was not found.", requestId)));
         requestInDb.setStatus(Status.CANCELED);
         final Request savedRequest = requestRepository.save(requestInDb);
-        log.info("Request {} canceled", savedRequest);
+        log.info("Request {} canceled", savedRequest.getId());
         return RequestMapper.toDto(savedRequest);
     }
 
@@ -172,7 +172,7 @@ public class UserServiceImpl implements UserService {
                     .forEach(request -> request.setStatus(Status.CANCELED));
             requestRepository.saveAll(requests);
         }
-        log.info("Request {} confirmed", savedRequest);
+        log.info("Request {} confirmed", savedRequest.getId());
         return RequestMapper.toDto(savedRequest);
     }
 
@@ -188,7 +188,7 @@ public class UserServiceImpl implements UserService {
                         .format("Request with id=%d was not found.", reqId)));
         requestInDb.setStatus(Status.REJECTED);
         final Request savedRequest = requestRepository.save(requestInDb);
-        log.info("Request {} rejected", savedRequest);
+        log.info("Request {} rejected", savedRequest.getId());
         return RequestMapper.toDto(savedRequest);
     }
 }
