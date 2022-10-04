@@ -100,8 +100,7 @@ public class UserServiceImpl implements UserService {
     public ParticipationRequestDto cancelRequest(Integer userId,
                                                  Integer requestId) {
         userRepository.findById(userId).orElseThrow(() ->
-                new NotFoundEntityException(String
-                        .format("User with id=%d was not found.", userId)));
+                new UserNotFoundException(String.format("User with id=%d not found.", userId)));
         final Request requestInDb = requestRepository.findById(requestId).orElseThrow(() ->
                 new NotFoundEntityException(String
                         .format("Request with id=%d was not found.", requestId)));
@@ -115,8 +114,7 @@ public class UserServiceImpl implements UserService {
     public List<EventShortDto> getEvents(Integer userId,
                                          @Min(0) Integer from, @Min(1) Integer size) {
         userRepository.findById(userId).orElseThrow(() ->
-                new NotFoundEntityException(String
-                        .format("User with id=%d was not found.", userId)));
+                new UserNotFoundException(String.format("User with id=%d not found.", userId)));
         return eventService.getUserEvents(userId, from, size);
     }
 
@@ -207,19 +205,15 @@ public class UserServiceImpl implements UserService {
     public List<UserShortDto> getUsers(Integer from, Integer size) {
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
-        return userRepository.findAllUsers(pageable).stream()
-                .map(UserMapper::toShortDto)
-                .collect(Collectors.toList());
+        return UserMapper.toShortDtoList(userRepository.findAll(pageable));
     }
 
     @Override
     public void subscribeToUser(Integer userId, Integer otherId) {
         User user = userRepository.findById(userId).orElseThrow(() ->
-                new UserNotFoundException(String
-                        .format("User with id=%d was not found.", userId)));
+                new UserNotFoundException(String.format("User with id=%d not found.", userId)));
         User otherUser = userRepository.findById(otherId).orElseThrow(() ->
-                new UserNotFoundException(String
-                        .format("User with id=%d was not found.", otherId)));
+                new UserNotFoundException(String.format("User with id=%d not found.", otherId)));
         final Optional<Subscription> optional = subscriptionRepository
                 .findByUserIdAndFollowerId(userId, otherId);
         if (optional.isPresent()) {
@@ -236,20 +230,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void unSubscribe(Integer userId, Integer otherId) {
-        userRepository.findById(userId).orElseThrow(() ->
-                new UserNotFoundException(String
-                        .format("User with id=%d was not found.", userId)));
-        userRepository.findById(otherId).orElseThrow(() ->
-                new UserNotFoundException(String
-                        .format("User with id=%d was not found.", otherId)));
         final Optional<Subscription> optional = subscriptionRepository
                 .findByUserIdAndFollowerId(userId, otherId);
         if (optional.isEmpty()) {
             throw new ForbiddenException(
                     String.format("User id=%d couldn't be unsubscribe userId=%d", otherId, userId));
         }
-        subscriptionRepository.delete(optional.get());
-        log.info("Subscription {} deleted", optional.get());
+        subscriptionRepository.deleteById(optional.get().getId());
+        log.info("Subscription {} deleted", optional.get().getId());
     }
 
     @Override
@@ -267,13 +255,11 @@ public class UserServiceImpl implements UserService {
     public List<SubscriptionDto> getSubscriptions(Integer subscriberId,
                                                   Integer from, Integer size) {
         userRepository.findById(subscriberId).orElseThrow(() ->
-                new UserNotFoundException(String
-                        .format("User with id=%d was not found.", subscriberId)));
+                new UserNotFoundException(String.format("User with id=%d not found.", subscriberId)));
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
-        return subscriptionRepository.findAllByFollowerId(subscriberId, pageable).stream()
-                .map(SubscriptionMapper::toDto)
-                .collect(Collectors.toList());
+        return SubscriptionMapper
+                .toDtoList(subscriptionRepository.findAllByFollowerId(subscriberId, pageable));
     }
 
 }
