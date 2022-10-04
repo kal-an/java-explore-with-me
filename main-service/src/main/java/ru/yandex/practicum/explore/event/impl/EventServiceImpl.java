@@ -5,7 +5,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.explore.category.CategoryMapper;
 import ru.yandex.practicum.explore.category.CategoryRepository;
 import ru.yandex.practicum.explore.category.model.Category;
@@ -21,7 +20,6 @@ import ru.yandex.practicum.explore.exception.BadRequestException;
 import ru.yandex.practicum.explore.exception.ForbiddenException;
 import ru.yandex.practicum.explore.user.model.User;
 
-import javax.validation.constraints.Min;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
