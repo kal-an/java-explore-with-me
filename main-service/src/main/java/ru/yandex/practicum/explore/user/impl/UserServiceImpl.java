@@ -24,7 +24,6 @@ import ru.yandex.practicum.explore.subscription.SubscriptionRepository;
 import ru.yandex.practicum.explore.subscription.dto.SubscriptionDto;
 import ru.yandex.practicum.explore.subscription.model.Subscription;
 import ru.yandex.practicum.explore.user.UserMapper;
-import ru.yandex.practicum.explore.user.UserNotFoundException;
 import ru.yandex.practicum.explore.user.UserRepository;
 import ru.yandex.practicum.explore.user.UserService;
 import ru.yandex.practicum.explore.user.dto.UserShortDto;
@@ -100,7 +99,7 @@ public class UserServiceImpl implements UserService {
     public ParticipationRequestDto cancelRequest(Integer userId,
                                                  Integer requestId) {
         userRepository.findById(userId).orElseThrow(() ->
-                new UserNotFoundException(String.format("User with id=%d not found.", userId)));
+                new NotFoundEntityException(String.format("User with id=%d not found.", userId)));
         final Request requestInDb = requestRepository.findById(requestId).orElseThrow(() ->
                 new NotFoundEntityException(String
                         .format("Request with id=%d was not found.", requestId)));
@@ -114,7 +113,7 @@ public class UserServiceImpl implements UserService {
     public List<EventShortDto> getEvents(Integer userId,
                                          @Min(0) Integer from, @Min(1) Integer size) {
         userRepository.findById(userId).orElseThrow(() ->
-                new UserNotFoundException(String.format("User with id=%d not found.", userId)));
+                new NotFoundEntityException(String.format("User with id=%d not found.", userId)));
         return eventService.getUserEvents(userId, from, size);
     }
 
@@ -211,9 +210,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void subscribeToUser(Integer userId, Integer otherId) {
         User user = userRepository.findById(userId).orElseThrow(() ->
-                new UserNotFoundException(String.format("User with id=%d not found.", userId)));
+                new NotFoundEntityException(String.format("User with id=%d not found.", userId)));
         User otherUser = userRepository.findById(otherId).orElseThrow(() ->
-                new UserNotFoundException(String.format("User with id=%d not found.", otherId)));
+                new NotFoundEntityException(String.format("User with id=%d not found.", otherId)));
         final Optional<Subscription> optional = subscriptionRepository
                 .findByUserIdAndFollowerId(userId, otherId);
         if (optional.isPresent()) {
@@ -244,7 +243,7 @@ public class UserServiceImpl implements UserService {
     public List<EventShortDto> getEventsForSubscriber(Integer subscriberId,
                                                        Integer from, Integer size) {
         userRepository.findById(subscriberId).orElseThrow(() ->
-                new UserNotFoundException(String
+                new NotFoundEntityException(String
                         .format("User with id=%d was not found.", subscriberId)));
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
@@ -255,7 +254,7 @@ public class UserServiceImpl implements UserService {
     public List<SubscriptionDto> getSubscriptions(Integer subscriberId,
                                                   Integer from, Integer size) {
         userRepository.findById(subscriberId).orElseThrow(() ->
-                new UserNotFoundException(String.format("User with id=%d not found.", subscriberId)));
+                new NotFoundEntityException(String.format("User with id=%d not found.", subscriberId)));
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
         return SubscriptionMapper
