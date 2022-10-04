@@ -24,10 +24,11 @@ public class Request {
     @Column(nullable = false)
     private LocalDateTime created;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "requester_id", nullable = false)
     private User requester;
 
