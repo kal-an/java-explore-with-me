@@ -28,7 +28,6 @@ import java.util.List;
 
 @Service
 @Slf4j
-@Validated
 public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
@@ -45,7 +44,7 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getAllEvents(String text, List<Integer> categories, Boolean paid,
                                             String rangeStart, String rangeEnd,
                                             Boolean onlyAvailable, String sort,
-                                            @Min(0) Integer from, @Min(1) Integer size) {
+                                            Integer from, Integer size) {
         LocalDateTime start, end;
         if (rangeStart.isBlank() || rangeEnd.isBlank()) {
             start = LocalDateTime.now();
@@ -100,7 +99,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventShortDto> getUserEvents(Integer userId,
-                                             @Min(0) Integer from, @Min(1) Integer size) {
+                                             Integer from, Integer size) {
         int page = from / size;
         Pageable pageable = PageRequest.of(page, size);
         return EventMapper.toShortDtoList(eventRepository
