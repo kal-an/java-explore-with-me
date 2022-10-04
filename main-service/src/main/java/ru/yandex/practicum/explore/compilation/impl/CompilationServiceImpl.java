@@ -115,21 +115,20 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public void unPinCompilation(Integer compId) {
-        final Compilation compInDb = compilationRepository.findById(compId).orElseThrow(() ->
-                new CompilationNotFoundException(String
-                        .format("Compilation with id=%d was not found.", compId)));
-        compInDb.setPinned(false);
-        final Compilation savedCompilation = compilationRepository.save(compInDb);
-        log.info("Compilation {} unpinned", savedCompilation.getId());
+        changePinned(compId, false);
     }
 
     @Override
     public void pinCompilation(Integer compId) {
+        changePinned(compId, true);
+    }
+
+    private void changePinned(Integer compId, boolean pinned) {
         final Compilation compInDb = compilationRepository.findById(compId).orElseThrow(() ->
                 new CompilationNotFoundException(String
                         .format("Compilation with id=%d was not found.", compId)));
-        compInDb.setPinned(true);
+        compInDb.setPinned(pinned);
         final Compilation savedCompilation = compilationRepository.save(compInDb);
-        log.info("Compilation {} pinned", savedCompilation.getId());
+        log.info("Compilation {} {}", savedCompilation.getId(), savedCompilation.getPinned());
     }
 }
