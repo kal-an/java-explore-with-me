@@ -1,5 +1,7 @@
 package ru.yandex.practicum.explore.subscription;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import ru.yandex.practicum.explore.subscription.dto.SubscriptionDto;
 import ru.yandex.practicum.explore.subscription.model.Subscription;
 import ru.yandex.practicum.explore.user.UserMapper;
@@ -7,6 +9,7 @@ import ru.yandex.practicum.explore.user.UserMapper;
 import java.util.ArrayList;
 import java.util.List;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SubscriptionMapper {
 
     public static SubscriptionDto toDto(Subscription subscription) {
