@@ -11,13 +11,12 @@ import ru.yandex.practicum.explore.event.dto.NewEventDto;
 import ru.yandex.practicum.explore.event.dto.UpdateEventRequest;
 import ru.yandex.practicum.explore.event.model.State;
 import ru.yandex.practicum.explore.exception.ForbiddenException;
+import ru.yandex.practicum.explore.exception.NotFoundEntityException;
 import ru.yandex.practicum.explore.request.RequestMapper;
-import ru.yandex.practicum.explore.request.RequestNotFoundException;
 import ru.yandex.practicum.explore.request.RequestRepository;
 import ru.yandex.practicum.explore.request.dto.ParticipationRequestDto;
 import ru.yandex.practicum.explore.request.model.Request;
 import ru.yandex.practicum.explore.request.model.Status;
-import ru.yandex.practicum.explore.user.UserNotFoundException;
 import ru.yandex.practicum.explore.user.UserRepository;
 import ru.yandex.practicum.explore.user.UserService;
 import ru.yandex.practicum.explore.user.model.User;
@@ -53,7 +52,7 @@ public class UserServiceImpl implements UserService {
     public ParticipationRequestDto createRequest(Integer userId,
                                                  Integer eventId) {
         final User userInDb = userRepository.findById(userId).orElseThrow(() ->
-                new UserNotFoundException(String
+                new NotFoundEntityException(String
                         .format("User with id=%d was not found.", userId)));
         final EventFullDto eventDto = eventService.getEvent(eventId);
         final Optional<Request> optionalRequest = requestRepository
@@ -89,10 +88,10 @@ public class UserServiceImpl implements UserService {
     public ParticipationRequestDto cancelRequest(Integer userId,
                                                  Integer requestId) {
         userRepository.findById(userId).orElseThrow(() ->
-                new UserNotFoundException(String
+                new NotFoundEntityException(String
                         .format("User with id=%d was not found.", userId)));
         final Request requestInDb = requestRepository.findById(requestId).orElseThrow(() ->
-                new RequestNotFoundException(String
+                new NotFoundEntityException(String
                         .format("Request with id=%d was not found.", requestId)));
         requestInDb.setStatus(Status.CANCELED);
         final Request savedRequest = requestRepository.save(requestInDb);
@@ -104,7 +103,7 @@ public class UserServiceImpl implements UserService {
     public List<EventShortDto> getEvents(Integer userId,
                                          @Min(0) Integer from, @Min(1) Integer size) {
         userRepository.findById(userId).orElseThrow(() ->
-                new UserNotFoundException(String
+                new NotFoundEntityException(String
                         .format("User with id=%d was not found.", userId)));
         return eventService.getUserEvents(userId, from, size);
     }
@@ -113,7 +112,7 @@ public class UserServiceImpl implements UserService {
     public EventFullDto updateEvent(Integer userId,
                                     UpdateEventRequest updateDto) {
         userRepository.findById(userId).orElseThrow(() ->
-                new UserNotFoundException(String
+                new NotFoundEntityException(String
                         .format("User with id=%d was not found.", userId)));
         return eventService.updateEvent(updateDto);
     }
@@ -121,7 +120,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public EventFullDto createEvent(Integer userId, NewEventDto newEventDto) {
         final User user = userRepository.findById(userId).orElseThrow(() ->
-                new UserNotFoundException(String
+                new NotFoundEntityException(String
                         .format("User with id=%d was not found.", userId)));
         return eventService.createEvent(newEventDto, user);
     }
@@ -129,7 +128,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public EventFullDto getEvent(Integer userId, Integer eventId) {
         userRepository.findById(userId).orElseThrow(() ->
-                new UserNotFoundException(String
+                new NotFoundEntityException(String
                         .format("User with id=%d was not found.", userId)));
         return eventService.getEvent(eventId);
     }
@@ -137,7 +136,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public EventFullDto cancelEvent(Integer userId, Integer eventId) {
         userRepository.findById(userId).orElseThrow(() ->
-                new UserNotFoundException(String
+                new NotFoundEntityException(String
                         .format("User with id=%d was not found.", userId)));
         return eventService.cancelEvent(eventId);
     }
@@ -146,7 +145,7 @@ public class UserServiceImpl implements UserService {
     public List<ParticipationRequestDto> getRequests(Integer userId,
                                                      Integer eventId) {
         userRepository.findById(userId).orElseThrow(() ->
-                new UserNotFoundException(String
+                new NotFoundEntityException(String
                         .format("User with id=%d was not found.", userId)));
         eventService.getEvent(eventId);
         return RequestMapper.toDtoList(requestRepository.findByEventId(eventId));
@@ -157,11 +156,11 @@ public class UserServiceImpl implements UserService {
                                                   Integer reqId, Integer eventId) {
         final EventFullDto eventDto = eventService.getEvent(eventId);
         userRepository.findById(userId).orElseThrow(() ->
-                new UserNotFoundException(String
+                new NotFoundEntityException(String
                         .format("User with id=%d was not found.", userId)));
 
         final Request requestInDb = requestRepository.findById(reqId).orElseThrow(() ->
-                new RequestNotFoundException(String
+                new NotFoundEntityException(String
                         .format("Request with id=%d was not found.", reqId)));
         requestInDb.setStatus(Status.CONFIRMED);
         final Request savedRequest = requestRepository.save(requestInDb);
@@ -180,11 +179,11 @@ public class UserServiceImpl implements UserService {
     public ParticipationRequestDto rejectRequest(Integer userId,
                                                  Integer reqId, Integer eventId) {
         userRepository.findById(userId).orElseThrow(() ->
-                new UserNotFoundException(String
+                new NotFoundEntityException(String
                         .format("User with id=%d was not found.", userId)));
         eventService.getEvent(eventId);
         final Request requestInDb = requestRepository.findById(reqId).orElseThrow(() ->
-                new RequestNotFoundException(String
+                new NotFoundEntityException(String
                         .format("Request with id=%d was not found.", reqId)));
         requestInDb.setStatus(Status.REJECTED);
         final Request savedRequest = requestRepository.save(requestInDb);

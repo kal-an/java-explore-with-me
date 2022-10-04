@@ -6,12 +6,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.explore.category.CategoryMapper;
-import ru.yandex.practicum.explore.category.CategoryNotFoundException;
 import ru.yandex.practicum.explore.category.CategoryRepository;
 import ru.yandex.practicum.explore.category.CategoryService;
 import ru.yandex.practicum.explore.category.dto.CategoryDto;
 import ru.yandex.practicum.explore.category.model.Category;
 import ru.yandex.practicum.explore.exception.ConflictEntityException;
+import ru.yandex.practicum.explore.exception.NotFoundEntityException;
 
 import java.util.List;
 
@@ -35,7 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto getCategory(Integer id) {
         final Category inDb = categoryRepository.findById(id).orElseThrow(() ->
-                new CategoryNotFoundException(String
+                new NotFoundEntityException(String
                         .format("Category with id=%d was not found.", id)));
         return CategoryMapper.toDto(inDb);
     }
@@ -43,7 +43,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto updateCategory(CategoryDto updateDto) {
         final Category inDb = categoryRepository.findById(updateDto.getId())
-                .orElseThrow(() -> new CategoryNotFoundException(String
+                .orElseThrow(() -> new NotFoundEntityException(String
                         .format("Category with id=%d was not found.", updateDto.getId())));
         if (updateDto.getName() != null) inDb.setName(updateDto.getName());
         final Category savedCategory = categoryRepository.save(inDb);
@@ -61,7 +61,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void deleteCategory(Integer id) {
         final Category inDb = categoryRepository.findById(id).orElseThrow(() ->
-                new CategoryNotFoundException(String
+                new NotFoundEntityException(String
                         .format("Category with id=%d was not found.", id)));
         try {
             categoryRepository.delete(inDb);

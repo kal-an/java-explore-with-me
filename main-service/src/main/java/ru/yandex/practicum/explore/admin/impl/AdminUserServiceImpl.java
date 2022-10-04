@@ -6,8 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.explore.admin.AdminRepository;
 import ru.yandex.practicum.explore.admin.AdminUserService;
+import ru.yandex.practicum.explore.exception.NotFoundEntityException;
 import ru.yandex.practicum.explore.user.UserMapper;
-import ru.yandex.practicum.explore.user.UserNotFoundException;
 import ru.yandex.practicum.explore.user.dto.UserDto;
 import ru.yandex.practicum.explore.user.model.User;
 
@@ -46,7 +46,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Override
     public void deleteUser(Integer userId) {
         final User user = adminRepository.findById(userId).orElseThrow(() ->
-                new UserNotFoundException(String
+                new NotFoundEntityException(String
                         .format("User with id=%d was not found.", userId)));
         adminRepository.delete(user);
     }

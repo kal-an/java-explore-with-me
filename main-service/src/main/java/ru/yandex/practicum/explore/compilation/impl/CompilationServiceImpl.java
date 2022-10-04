@@ -5,7 +5,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.explore.compilation.CompilationMapper;
-import ru.yandex.practicum.explore.compilation.CompilationNotFoundException;
 import ru.yandex.practicum.explore.compilation.CompilationRepository;
 import ru.yandex.practicum.explore.compilation.CompilationService;
 import ru.yandex.practicum.explore.compilation.dto.CompilationDto;
@@ -16,6 +15,7 @@ import ru.yandex.practicum.explore.event.EventRepository;
 import ru.yandex.practicum.explore.event.dto.EventShortDto;
 import ru.yandex.practicum.explore.event.model.Event;
 import ru.yandex.practicum.explore.event.model.EventWithRequestsViews;
+import ru.yandex.practicum.explore.exception.NotFoundEntityException;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -55,7 +55,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public CompilationDto getCompilation(Integer id) {
         final Compilation compInDb = compilationRepository.findById(id).orElseThrow(() ->
-                new CompilationNotFoundException(String
+                new NotFoundEntityException(String
                         .format("Compilation with id=%d was not found.", id)));
         final List<EventWithRequestsViews> eventsCustom = eventRepository
                 .findByCompilationIdWithRequestsViews(id);
@@ -87,7 +87,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public void deleteCompilation(Integer compId) {
         final Compilation compInDb = compilationRepository.findById(compId).orElseThrow(() ->
-                new CompilationNotFoundException(String
+                new NotFoundEntityException(String
                         .format("Compilation with id=%d was not found.", compId)));
         compilationRepository.delete(compInDb);
         log.info("Compilation {} deleted", compId);
@@ -96,7 +96,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public void deleteEventCompilation(Integer compId, Integer eventId) {
         final Compilation compInDb = compilationRepository.findById(compId).orElseThrow(() ->
-                new CompilationNotFoundException(String
+                new NotFoundEntityException(String
                         .format("Compilation with id=%d was not found.", compId)));
         compInDb.getEvents().removeIf(event -> event.getId().equals(eventId));
         final Compilation savedCompilation = compilationRepository.save(compInDb);
@@ -106,7 +106,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public void addEventCompilation(Integer compId, Event newEvent) {
         final Compilation compInDb = compilationRepository.findById(compId).orElseThrow(() ->
-                new CompilationNotFoundException(String
+                new NotFoundEntityException(String
                         .format("Compilation with id=%d was not found.", compId)));
         compInDb.getEvents().add(newEvent);
         final Compilation savedCompilation = compilationRepository.save(compInDb);
@@ -125,7 +125,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     private void changePinned(Integer compId, boolean pinned) {
         final Compilation compInDb = compilationRepository.findById(compId).orElseThrow(() ->
-                new CompilationNotFoundException(String
+                new NotFoundEntityException(String
                         .format("Compilation with id=%d was not found.", compId)));
         compInDb.setPinned(pinned);
         final Compilation savedCompilation = compilationRepository.save(compInDb);

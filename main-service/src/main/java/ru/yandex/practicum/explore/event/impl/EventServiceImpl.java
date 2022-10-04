@@ -9,7 +9,6 @@ import ru.yandex.practicum.explore.category.CategoryMapper;
 import ru.yandex.practicum.explore.category.CategoryRepository;
 import ru.yandex.practicum.explore.category.model.Category;
 import ru.yandex.practicum.explore.event.EventMapper;
-import ru.yandex.practicum.explore.event.EventNotFoundException;
 import ru.yandex.practicum.explore.event.EventRepository;
 import ru.yandex.practicum.explore.event.EventService;
 import ru.yandex.practicum.explore.event.dto.*;
@@ -18,6 +17,7 @@ import ru.yandex.practicum.explore.event.model.EventWithRequestsViews;
 import ru.yandex.practicum.explore.event.model.State;
 import ru.yandex.practicum.explore.exception.BadRequestException;
 import ru.yandex.practicum.explore.exception.ForbiddenException;
+import ru.yandex.practicum.explore.exception.NotFoundEntityException;
 import ru.yandex.practicum.explore.user.model.User;
 
 import java.time.LocalDateTime;
@@ -89,7 +89,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto getEvent(Integer id) {
         final EventWithRequestsViews eventInDb = eventRepository.findByEventIdWithRequestsViews(id)
-                .orElseThrow(() -> new EventNotFoundException(String
+                .orElseThrow(() -> new NotFoundEntityException(String
                         .format("Event with id=%d was not found.", id)));
         log.info("Get event {}", eventInDb);
         return EventMapper.toFullDto(eventInDb);
@@ -107,7 +107,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto updateEvent(UpdateEventRequest updateDto) {
         final Event savedInDb = eventRepository.findById(updateDto.getEventId()).orElseThrow(() ->
-                new EventNotFoundException(String.format("Event with id=%d was not found.",
+                new NotFoundEntityException(String.format("Event with id=%d was not found.",
                                 updateDto.getEventId())));
         if (savedInDb.isPublished()
                 || LocalDateTime.now().plusHours(2)
@@ -117,7 +117,7 @@ public class EventServiceImpl implements EventService {
                     String.format("Event id=%d couldn't be updated", savedInDb.getId()));
         }
         final Category newCategory = categoryRepository.findById(updateDto.getCategory())
-                .orElseThrow(() -> new EventNotFoundException(String
+                .orElseThrow(() -> new NotFoundEntityException(String
                         .format("Category with id=%d was not found.",
                                 updateDto.getCategory())));
         if (updateDto.getPaid() != null) savedInDb.setPaid(updateDto.getPaid());
@@ -139,7 +139,7 @@ public class EventServiceImpl implements EventService {
         log.info("Event {} updated", updatedEvent);
         final EventWithRequestsViews eventInDb = eventRepository
                 .findByEventIdWithRequestsViews(savedInDb.getId()).orElseThrow(() ->
-                        new EventNotFoundException(String.format("Event with id=%d was not found.",
+                        new NotFoundEntityException(String.format("Event with id=%d was not found.",
                                 savedInDb.getId())));
         return EventMapper.toFullDto(eventInDb);
     }
@@ -147,10 +147,10 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto updateEventByAdmin(Integer eventId, AdminUpdateEventRequest updateDto) {
         final Event savedInDb = eventRepository.findById(eventId).orElseThrow(() ->
-                new EventNotFoundException(String
+                new NotFoundEntityException(String
                         .format("Event with id=%d was not found.", eventId)));
         final Category newCategory = categoryRepository.findById(updateDto.getCategory())
-                .orElseThrow(() -> new EventNotFoundException(String
+                .orElseThrow(() -> new NotFoundEntityException(String
                         .format("Category with id=%d was not found.", updateDto.getCategory())));
         if (updateDto.getPaid() != null) savedInDb.setPaid(updateDto.getPaid());
         if (updateDto.getEventDate() != null)
@@ -172,7 +172,7 @@ public class EventServiceImpl implements EventService {
         log.info("Event {} updated", updatedEvent);
         final EventWithRequestsViews eventInDb = eventRepository
                 .findByEventIdWithRequestsViews(savedInDb.getId()).orElseThrow(() ->
-                        new EventNotFoundException(String.format("Event with id=%d was not found.",
+                        new NotFoundEntityException(String.format("Event with id=%d was not found.",
                                 savedInDb.getId())));
         return EventMapper.toFullDto(eventInDb);
     }
@@ -184,7 +184,7 @@ public class EventServiceImpl implements EventService {
             throw new ForbiddenException("Event couldn't be created");
         }
         final Category category = categoryRepository.findById(newDto.getCategory())
-                .orElseThrow(() -> new EventNotFoundException(String
+                .orElseThrow(() -> new NotFoundEntityException(String
                         .format("Category with id=%d was not found.",
                                 newDto.getCategory())));
         final Event event = Event.builder()
@@ -206,7 +206,7 @@ public class EventServiceImpl implements EventService {
         log.info("Event {} saved", savedInDb);
         final EventWithRequestsViews eventInDb = eventRepository
                 .findByEventIdWithRequestsViews(savedInDb.getId()).orElseThrow(() ->
-                        new EventNotFoundException(String.format("Event with id=%d was not found.",
+                        new NotFoundEntityException(String.format("Event with id=%d was not found.",
                                 savedInDb.getId())));
         return EventMapper.toFullDto(eventInDb);
     }
@@ -214,7 +214,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto cancelEvent(Integer eventId) {
         final Event savedInDb = eventRepository.findById(eventId).orElseThrow(() ->
-                new EventNotFoundException(String
+                new NotFoundEntityException(String
                         .format("Event with id=%d was not found.", eventId)));
         if (!savedInDb.isPending()) {
             log.error("Event id={} couldn't be canceled", savedInDb.getId());
@@ -226,7 +226,7 @@ public class EventServiceImpl implements EventService {
         log.info("Event {} canceled", updatedEvent);
         final EventWithRequestsViews eventInDb = eventRepository
                 .findByEventIdWithRequestsViews(savedInDb.getId()).orElseThrow(() ->
-                        new EventNotFoundException(String.format("Event with id=%d was not found.",
+                        new NotFoundEntityException(String.format("Event with id=%d was not found.",
                                 savedInDb.getId())));
         return EventMapper.toFullDto(eventInDb);
     }
@@ -234,7 +234,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto publishEvent(Integer eventId) {
         final Event savedInDb = eventRepository.findById(eventId).orElseThrow(() ->
-                new EventNotFoundException(String
+                new NotFoundEntityException(String
                         .format("Event with id=%d was not found.", eventId)));
         if (!savedInDb.isPending()
                 || LocalDateTime.now().plusHours(1)
@@ -249,7 +249,7 @@ public class EventServiceImpl implements EventService {
         log.info("Event {} published", updatedEvent);
         final EventWithRequestsViews eventInDb = eventRepository
                 .findByEventIdWithRequestsViews(savedInDb.getId()).orElseThrow(() ->
-                        new EventNotFoundException(String.format("Event with id=%d was not found.",
+                        new NotFoundEntityException(String.format("Event with id=%d was not found.",
                                 savedInDb.getId())));
         return EventMapper.toFullDto(eventInDb);
     }
@@ -257,7 +257,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto rejectEvent(Integer eventId) {
         final Event savedInDb = eventRepository.findById(eventId).orElseThrow(() ->
-                new EventNotFoundException(String
+                new NotFoundEntityException(String
                         .format("Event with id=%d was not found.", eventId)));
         if (savedInDb.isPublished()) {
             log.error("Event id={} couldn't be rejected", savedInDb.getId());
@@ -269,7 +269,7 @@ public class EventServiceImpl implements EventService {
         log.info("Event {} rejected", updatedEvent);
         final EventWithRequestsViews eventInDb = eventRepository
                 .findByEventIdWithRequestsViews(savedInDb.getId()).orElseThrow(() ->
-                        new EventNotFoundException(String.format("Event with id=%d was not found.",
+                        new NotFoundEntityException(String.format("Event with id=%d was not found.",
                                 savedInDb.getId())));
         return EventMapper.toFullDto(eventInDb);
     }

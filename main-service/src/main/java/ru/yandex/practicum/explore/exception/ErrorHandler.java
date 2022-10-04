@@ -10,14 +10,9 @@ import ru.yandex.practicum.explore.admin.AdminCompilationController;
 import ru.yandex.practicum.explore.admin.AdminEventController;
 import ru.yandex.practicum.explore.admin.AdminUserController;
 import ru.yandex.practicum.explore.category.CategoryController;
-import ru.yandex.practicum.explore.category.CategoryNotFoundException;
 import ru.yandex.practicum.explore.compilation.CompilationController;
-import ru.yandex.practicum.explore.compilation.CompilationNotFoundException;
 import ru.yandex.practicum.explore.event.EventController;
-import ru.yandex.practicum.explore.event.EventNotFoundException;
-import ru.yandex.practicum.explore.request.RequestNotFoundException;
 import ru.yandex.practicum.explore.user.UserController;
-import ru.yandex.practicum.explore.user.UserNotFoundException;
 
 import java.time.LocalDateTime;
 
@@ -40,12 +35,7 @@ public class ErrorHandler {
         return new ApiError(e.getStackTrace(), e.getMessage(), LocalDateTime.now());
     }
 
-    @ExceptionHandler({
-            CategoryNotFoundException.class,
-            CompilationNotFoundException.class,
-            EventNotFoundException.class,
-            RequestNotFoundException.class,
-            UserNotFoundException.class})
+    @ExceptionHandler({NotFoundEntityException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiError handleNotFound(final RuntimeException e) {
         log.error("Error {}", e.getMessage());
