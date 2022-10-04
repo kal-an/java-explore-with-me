@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.explore.category.CategoryMapper;
 import ru.yandex.practicum.explore.category.CategoryRepository;
 import ru.yandex.practicum.explore.category.model.Category;
@@ -27,6 +28,7 @@ import java.util.List;
 
 @Service
 @Slf4j
+@Validated
 public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
