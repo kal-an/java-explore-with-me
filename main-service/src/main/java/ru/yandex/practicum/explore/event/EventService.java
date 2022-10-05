@@ -5,7 +5,6 @@ import ru.yandex.practicum.explore.event.dto.*;
 import ru.yandex.practicum.explore.event.model.State;
 import ru.yandex.practicum.explore.user.model.User;
 
-import javax.validation.constraints.Min;
 import java.util.List;
 
 public interface EventService {
