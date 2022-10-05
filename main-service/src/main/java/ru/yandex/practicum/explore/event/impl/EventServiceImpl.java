@@ -277,11 +277,8 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventShortDto> getEventsForSubscriber(Integer subscriberId,
                                                       Pageable pageable) {
-        return eventRepository
-                .findByFollowerIdIdWithRequestsViews(subscriberId, LocalDateTime.now(), pageable)
-                .stream()
-                .map(EventMapper::toShortDto)
-                .collect(Collectors.toList());
+        return EventMapper.toShortDtoList(eventRepository
+                .findByFollowerIdIdWithRequestsViews(subscriberId, LocalDateTime.now(), pageable));
     }
 
 }
