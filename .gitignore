@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+/stat-service/.gitignore
+/stat-service/mvnw
+/stat-service/mvnw.cmd
+/main-service/mvnw
+/main-service/.gitignore
+/main-service/mvnw.cmd

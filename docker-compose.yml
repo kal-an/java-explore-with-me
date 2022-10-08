@@ -1,15 +1,67 @@
-version: '3.1'
+version: '3.8'
 services:
   stats-server:
+    build: ./stat-service
+    image: kali3/explore-stats-server:0.1
+    container_name: explore-stats-server
+    depends_on:
+      - stats-db
     ports:
       - "9090:9090"
+    environment:
+#      - TZ=Asia/Yekaterinburg
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stat-db:5432/stat
+      - DB_NAME=stat
+      - POSTGRES_USER=stat
+      - POSTGRES_PASSWORD=stat
+      - DB_HOST=stat-db
+      - DB_PORT=5432
 
   stats-db:
     image: postgres:14-alpine
+    volumes:
+      - /var/lib/postgresql/data/
+      - ./stat-service/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/init.sql
+    container_name: stat-db
+    ports:
+      - "6541:5432"
+    environment:
+      - DB_NAME=stat
+      - POSTGRES_USER=stat
+      - POSTGRES_PASSWORD=stat
+      - DB_HOST=stat-db
+      - DB_PORT=5432
 
   ewm-service:
+    build: ./main-service
+    image: kali3/explore-main-server:0.1
+    container_name: explore-main-server
+    depends_on:
+      - stats-server
+      - ewm-db
     ports:
       - "8080:8080"
+    environment:
+#      - TZ=Asia/Yekaterinburg
+      - STATS_SERVER_URL=http://stats-server:9090
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://main-db:5432/explore
+      - DB_NAME=explore
+      - POSTGRES_USER=explore
+      - POSTGRES_PASSWORD=explore
+      - DB_HOST=main-db
+      - DB_PORT=5432
 
   ewm-db:
     image: postgres:14-alpine
+    volumes:
+      - /var/lib/postgresql/data/
+      - ./main-service/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/init.sql
+    container_name: main-db
+    ports:
+      - "6542:5432"
+    environment:
+      - DB_NAME=explore
+      - POSTGRES_USER=explore
+      - POSTGRES_PASSWORD=explore
+      - DB_HOST=main-db
+      - DB_PORT=5432
