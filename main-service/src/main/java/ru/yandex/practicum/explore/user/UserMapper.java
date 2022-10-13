@@ -42,4 +42,12 @@ public class UserMapper {
         }
         return dtos;
     }
+
+    public static List<UserShortDto> toShortDtoList(Iterable<User> users) {
+        List<UserShortDto> dtos = new ArrayList<>();
+        for (User user : users) {
+            dtos.add(toDto(user));
+        }
+        return dtos;
+    }
 }
