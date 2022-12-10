@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-categories
+      author: Andrey
+      changes:
+        - createTable:
+            tableName: categories
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_category
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(25)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uq_cat_name
