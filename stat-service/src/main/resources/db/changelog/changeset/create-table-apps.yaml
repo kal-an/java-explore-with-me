@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-apps
+      author: Andrey
+      changes:
+        - createTable:
+            tableName: apps
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_app
+                    nullable: false
+              - column:
+                  name: app
+                  type: varchar(25)
+                  constraints:
+                    nullable: false
+                    unique: true

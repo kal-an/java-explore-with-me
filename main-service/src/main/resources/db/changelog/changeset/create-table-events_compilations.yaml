@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-events_compilations
+      author: Andrey
+      changes:
+        - createTable:
+            tableName: events_compilations
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: event_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: compilation_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            constraintName: fk_ec_on_event
+            baseTableName: events_compilations
+            baseColumnNames: event_id
+            referencedTableName: events
+            referencedColumnNames: id
+            onDelete: cascade
+        - addForeignKeyConstraint:
+            constraintName: fk_ec_on_compilation
+            baseTableName: events_compilations
+            baseColumnNames: compilation_id
+            referencedTableName: compilations
+            referencedColumnNames: id
+            onDelete: cascade

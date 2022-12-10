@@ -1,0 +1,102 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-events
+      author: Andrey
+      changes:
+        - createTable:
+            tableName: events
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_event
+                    nullable: false
+              - column:
+                  name: title
+                  type: varchar(120)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(7000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_on
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: event_date
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: lat
+                  type: float
+                  constraints:
+                    nullable: false
+              - column:
+                  name: lon
+                  type: float
+                  constraints:
+                    nullable: false
+              - column:
+                  name: annotation
+                  type: varchar(2000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: paid
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: creator_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: participant_limit
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: published_on
+                  type: timestamp without time zone
+              - column:
+                  name: request_moderation
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: state
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            constraintName: fk_event_on_user
+            baseTableName: events
+            baseColumnNames: creator_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: restrict
+        - addForeignKeyConstraint:
+            constraintName: fk_event_on_category
+            baseTableName: events
+            baseColumnNames: category_id
+            referencedTableName: categories
+            referencedColumnNames: id
+            onDelete: restrict
+        - addUniqueConstraint:
+            constraintName: uq_creator_title
+            tableName: events
+            columnNames: creator_id, title

@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-hits
+      author: Andrey
+      changes:
+        - createTable:
+            tableName: hits
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_hit
+                    nullable: false
+              - column:
+                  name: app_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_hit_on_app
+                    referencedTableName: apps
+                    referencedColumnNames: id
+              - column:
+                  name: uri
+                  type: varchar(150)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ip
+                  type: varchar(15)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: timestamp
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false

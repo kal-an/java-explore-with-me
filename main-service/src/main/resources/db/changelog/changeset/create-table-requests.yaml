@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-requests
+      author: Andrey
+      changes:
+        - createTable:
+            tableName: requests
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_requester
+                    nullable: false
+              - column:
+                  name: requester_id
+                  type: bigint
+              - column:
+                  name: event_id
+                  type: bigint
+              - column:
+                  name: created
+                  type: timestamp without time zone
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            constraintName: fk_request_on_requester
+            baseTableName: requests
+            baseColumnNames: requester_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: cascade
+        - addForeignKeyConstraint:
+            constraintName: fk_request_on_event
+            baseTableName: requests
+            baseColumnNames: event_id
+            referencedTableName: events
+            referencedColumnNames: id
+            onDelete: cascade
