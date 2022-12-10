@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-subscriptions
+      author: Andrey
+      changes:
+        - createTable:
+            tableName: subscriptions
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_subscription
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: follower_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            constraintName: fk_subscription_on_user
+            baseTableName: subscriptions
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: cascade
+        - addForeignKeyConstraint:
+            constraintName: fk_subscription_on_follower
+            baseTableName: subscriptions
+            baseColumnNames: follower_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: cascade
