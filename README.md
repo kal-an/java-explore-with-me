@@ -30,6 +30,11 @@ REST приложение реализовано с использованием
 ewm-main-service-spec.json
 ewm-stats-service-spec.json
 ```
+
+Пример, методов API доступных через Swagger:
+
+![PartSwaggerApi](swagger/main-service-api.png)
+
 ---
 ### Жизненный цикл событие модели данных:
 1. Создание события.
